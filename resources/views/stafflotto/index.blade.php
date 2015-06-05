@@ -12,7 +12,7 @@
 <div class="container">
 	<div class="row">
 	  <div class="col-md-8"style="font-family: 'Indie Flower', cursive;">I'm title</div>
-	  <div class="col-md-4">目前獎項
+	  <div class="col-md-4">目前獎項@@
 	  </div>
 	  <!--<div class="col-md-4">目前抽取的獎項</div>-->
 	</div>
