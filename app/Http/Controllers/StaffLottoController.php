@@ -5,28 +5,23 @@ use App\Http\Controllers\Controller;
 
 use Illuminate\Http\Request;
 use App\Staff;
+use App\Prize;
 
 class StaffLottoController extends Controller {
 
 	//
 	public function index()
 	{
-		
-		dd(Staff::get());
+		$staffs = Staff::get();
+		$prizes = Prize::get();
 
-		/*
-		$staff_name = ['YoYu','Jhou'];
-		//$test_name = '123';
-
-		return view('stafflotto.index',compact('staff_name'));
-
-		//return view('stafflotto',['test_name' => $test_name]);*/
+		return view('stafflotto.index',compact('staffs'),compact('prizes'));
 	}
 
-	public function show($id)
+	public function show($code)
 	{
-		$staff_names = ['YoYu','Jhou'];
-		$staff_name = $staff_names[$id];
-		return view('stafflotto.show',compact('staff_name'));
+		$staffs = Staff::get()->where('code',$code)->first();
+
+		return view('stafflotto.show',compact('staffs'));
 	}
 }

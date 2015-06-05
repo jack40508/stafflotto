@@ -9,7 +9,7 @@
 </head>
 <body>
 <div class="row">
-	  		<div class="col-md-12"><?= $staff_name; ?></div>
+	  		<div class="col-md-12"><?= $staffs->name; ?></div>
 	  	</div>
 </body>
 </html>
