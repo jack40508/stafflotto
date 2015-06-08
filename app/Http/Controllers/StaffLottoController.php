@@ -35,7 +35,7 @@ class StaffLottoController extends Controller {
 		return view('stafflotto.show',compact('prizes'));
 	}
 
-	public function update($type)
+	public function refresh($type)
 	{
 		
 		Session::put('type',$type);
