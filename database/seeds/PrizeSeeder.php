@@ -23,6 +23,7 @@ class PrizeSeeder extends Seeder {
       'name' => '獎品一',
       'code' => '0001',
       'level' => '0',
+      'type' => '獎項一',
 
       ]);
 
@@ -31,6 +32,7 @@ class PrizeSeeder extends Seeder {
       'name' => '獎品二',
       'code' => '0002',
       'level' => '0',
+      'type' => '獎項一',
 
       ]);
 
@@ -39,6 +41,7 @@ class PrizeSeeder extends Seeder {
       'name' => '獎品三',
       'code' => '0003',
       'level' => '0',
+      'type' => '獎項二',
 
       ]);
   }

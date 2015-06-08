@@ -19,6 +19,8 @@ Route::get('stafflotto', 'StaffLottoController@index');
 
 Route::get('stafflotto/{index}', 'StaffLottoController@show');
 
+Route::patch('stafflotto/{index}', 'StaffLottoController@update');
+
 
 Route::controllers([
 	'auth' => 'Auth\AuthController',

@@ -8,9 +8,15 @@
 	<title>Stafflotto_show</title>
 </head>
 <body>
-<div class="row">
-	  		<div class="col-md-12"><?= $staffs->name; ?></div>
+<div class="container">
+	<div class="row">
+		@foreach($prizes as $index => $prize)
+		<div class="row">
+	  		{{ $prize->name }}
 	  	</div>
+	  	@endforeach
+	</div>
+</div>
 </body>
 </html>
 
