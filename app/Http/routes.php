@@ -11,15 +11,15 @@
 |
 */
 
-Route::get('/', 'WelcomeController@index');
+Route::get('/', 'StaffLottoController@index');
 
-Route::get('home', 'HomeController@index');
+Route::get('home', 'StaffLottoController@index');
 
 Route::get('stafflotto', 'StaffLottoController@index');
 
 Route::get('stafflotto/{index}', 'StaffLottoController@show');
 
-Route::patch('stafflotto/{index}', 'StaffLottoController@refresh');
+Route::patch('stafflotto/{index}', 'StaffLottoController@update');
 
 
 Route::controllers([
