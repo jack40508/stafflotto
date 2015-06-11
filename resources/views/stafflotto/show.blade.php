@@ -34,7 +34,7 @@
 	  <div class="col-md-5"> 
 	  	
 		@foreach($nowprizes as $index => $nowprize)
-			{!! Form::model($nowprize,['url' => 'stafflotto/' . $nowprize->name  , 'method' => 'PATCH'])  !!}
+			{!! Form::model($nowprize,['url' => '/stafflotto/' . $nowprize->name  , 'method' => 'PATCH'])  !!}
 	  		<div class="row">
 		  			{!! Form::submit($nowprize->name,['class'=>'btn btn-primary']) !!}
 		  		</div>
