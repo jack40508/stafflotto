@@ -18,7 +18,7 @@ class CreateStaffTable extends Migration {
 			$table->string('name');
 			$table->string('code');
 			$table->boolean('level');
-			$table->string('prize_code')->nullable();
+			$table->string('prize_code')->DEFAULT('0');
 			$table->timestamps();
 		});
 	}

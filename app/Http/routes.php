@@ -11,9 +11,9 @@
 |
 */
 
-Route::get('/', 'WelcomeController@index');
+Route::get('/', 'StaffLottoController@index');
 
-Route::get('home', 'HomeController@index');
+Route::get('home', 'StaffLottoController@index');
 
 Route::get('stafflotto', 'StaffLottoController@index');
 

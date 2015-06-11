@@ -20,10 +20,11 @@ class PrizeSeeder extends Seeder {
 
     Prize::create([
       
-      'name' => '獎品一',
+      'name' => '超級獎品一',
       'code' => '0001',
       'level' => '0',
-      'type' => '獎項一',
+      'type' => '超級豪華特獎',
+      'amount' => 1,
 
       ]);
 
@@ -32,7 +33,8 @@ class PrizeSeeder extends Seeder {
       'name' => '獎品二',
       'code' => '0002',
       'level' => '0',
-      'type' => '獎項一',
+      'type' => '超級豪華特獎',
+      'amount' => 2,
 
       ]);
 
@@ -41,7 +43,8 @@ class PrizeSeeder extends Seeder {
       'name' => '獎品三',
       'code' => '0003',
       'level' => '0',
-      'type' => '獎項二',
+      'type' => '超超超超超超超超普普獎',
+      'amount' => 3,
 
       ]);
   }

@@ -19,6 +19,7 @@ class CreatePrizesTable extends Migration {
 			$table->string('code');
 			$table->string('type');
 			$table->boolean('level');
+			$table->integer('amount');
 			$table->timestamps();
 		});
 	}

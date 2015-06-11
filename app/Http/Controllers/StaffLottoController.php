@@ -14,33 +14,25 @@ class StaffLottoController extends Controller {
 	public function index()
 	{
 		$staffs = Staff::get();
+		$prizes = Prize::get();
+		$prizes_type = Prize::distinct()->select('type')->get();		
+
+		return view('stafflotto.index',compact('staffs','prizes','prizes_type'));
+	}
+
+	public function show($name)
+	{
+		$staffs = Staff::get();
+		$prizes = Prize::get();
 		$prizes_type = Prize::distinct()->select('type')->get();
-
-		if(!empty(Session::get('type')))
-		{
-			$prizes_nowtype = Session::get('type');
-			Session::forget('type');
-			$prizes_of_type = Prize::get()->where('type',$prizes_nowtype);
-		}
-		//$prizes_of_type = null;
+		$nowprizes = Prize::where('name',$name)->get();
 		
-
-		return view('stafflotto.index',compact('staffs','prizes_type','prizes_of_type'));
+		return view('stafflotto.show',compact('staffs','prizes','prizes_type','nowprizes'));
 	}
 
-	public function show($type)
+	public function update($name)
 	{
-		$prizes = Prize::get()->where('type',$type);
-		//dd($prizes);
-		return view('stafflotto.show',compact('prizes'));
+		return '123';
 	}
 
-	public function update($type)
-	{
-		
-		Session::put('type',$type);
-
-
-		return redirect('/stafflotto');
-	}
 }
