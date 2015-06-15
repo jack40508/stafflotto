@@ -13,19 +13,21 @@
 <div class="container">
 
 	<div class="row">
-	  <div class="col-md-4">目前抽的獎項
+	  <div class="col-md-4">
+	@foreach($nowprizes as $index => $nowprize)
+	  {!!$nowprize->name!!}
+	  @endforeach
 	</div>
 	  <!--<div class="col-md-4">目前抽取的獎項</div>-->
 	</div>
 
 	<div class="row">
-	  <div class="col-md-1">得獎編號1</div>
-	  <div class="col-md-1">得獎編號2</div>
-	  <div class="col-md-1">得獎編號3</div>
-	  <div class="col-md-1">得獎編號4</div>
-	  <div class="col-md-1">得獎編號5</div>
-	  <div class="col-md-1">得獎編號6</div>
 
+	  	@if(!empty($winners))
+			@foreach($winners as $index => $winner)
+			{{ $winner->name }}
+	 		@endforeach
+	 	@endif
 
 	</div>
 	<div class="row">
@@ -37,10 +39,10 @@
 		@foreach($nowprizes as $index => $nowprize)
 			{!! Form::model($nowprize,['url' => '/stafflotto/' . $nowprize->name  , 'method' => 'PATCH'])  !!}
 	  		<div class="row">
-		  			{!! Form::submit($nowprize->name,['class'=>'btn btn-primary']) !!}
+		  			{!! Form::submit('開始抽獎',['class'=>'btn btn-primary']) !!}
 		  		</div>
 		  	{!! Form::close() !!}
-	  		@endforeach
+	  	@endforeach
 			<!--{!! Form::model($nowprize,['url' => 'stafflotto/' . $nowprize->name  , 'method' => 'PATCH'])  !!}
 	  		<div class="row">
 		  			{!! Form::submit($nowprize->name,['class'=>'btn btn-primary']) !!}
