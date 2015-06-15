@@ -41,6 +41,62 @@ class StaffSeeder extends Seeder {
       'level' => '0',
 
       ]);
+
+    Staff::create([
+      
+      'name' => '員工四',
+      'code' => '00360004',
+      'level' => '0',
+
+      ]);
+
+    Staff::create([
+      
+      'name' => '員工五',
+      'code' => '00360005',
+      'level' => '0',
+
+      ]);
+
+    Staff::create([
+      
+      'name' => '員工六',
+      'code' => '00360006',
+      'level' => '0',
+
+      ]);
+
+    Staff::create([
+      
+      'name' => '員工七',
+      'code' => '00360007',
+      'level' => '0',
+
+      ]);
+
+    Staff::create([
+      
+      'name' => '員工八',
+      'code' => '00360008',
+      'level' => '0',
+
+      ]);
+
+    Staff::create([
+      
+      'name' => '員工九',
+      'code' => '00360009',
+      'level' => '1',
+
+      ]);
+
+    Staff::create([
+      
+      'name' => '員工十',
+      'code' => '00360010',
+      'level' => '0',
+
+      ]);
   }
 
 }

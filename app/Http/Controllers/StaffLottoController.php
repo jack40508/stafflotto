@@ -51,8 +51,8 @@ class StaffLottoController extends Controller {
 				{
 					for($j = 0; $j<10000; $j++)
 					{
-						$randnum1 = rand (0,($nowprizes[0]->amount-1));
-						$randnum2 = rand (0,($nowprizes[0]->amount-1));
+						$randnum1 = rand (0,($candidatesnum-1));
+						$randnum2 = rand (0,($candidatesnum-1));
 
 						$temp =  $candidates[$randnum1];
 						$candidates[$randnum1] = $candidates[$randnum2];
@@ -74,11 +74,36 @@ class StaffLottoController extends Controller {
 
 			else
 			{
-				$candidate = Staff::where('prize_code','')->where('level','1') ->get();			
+				$candidates = $candidate->where('prize_code','-1')->where('level','1')->get();
+				$candidatesnum = $candidate->where('prize_code','-1')->where('level','1')->count();
+
+				if($candidatesnum-$nowprizes[0]->amount >= 0)
+				{
+					for($j = 0; $j<10000; $j++)
+					{
+						$randnum1 = rand (0,($candidatesnum-1));
+						$randnum2 = rand (0,($candidatesnum-1));
+
+						$temp =  $candidates[$randnum1];
+						$candidates[$randnum1] = $candidates[$randnum2];
+						$candidates[$randnum2] = $temp;
+					}
+
+					for($i = 0; $i<$nowprizes[0]->amount; $i++)
+					{				
+						$candidates[$i]->prize_code = $name;
+						$candidates[$i]->save();				
+					}
+				}
+
+				else
+				{
+					return '剩餘抽獎人數不足';
+				}			
 			}
 		}
 
+		
 		return redirect('/stafflotto/' . $name);			
 	}
-
 }
