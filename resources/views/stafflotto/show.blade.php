@@ -21,8 +21,10 @@
 							<h2>{!!$nowprize->name!!}</h2>
 						@endforeach
 					</div>
+					
 					<div class="col-md-4">
 					</div>
+					
 					<div class="col-md-4">
 						@foreach($nowprizes as $index => $nowprize)
 							{!! Form::model($nowprize,['url' => '/stafflotto/' . $nowprize->name  , 'method' => 'PATCH'])!!}
