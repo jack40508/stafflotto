@@ -26,13 +26,84 @@ class StaffLottoController extends Controller {
 		$prizes = Prize::get();
 		$prizes_type = Prize::distinct()->select('type')->get();
 		$nowprizes = Prize::where('name',$name)->get();
-		
-		return view('stafflotto.show',compact('staffs','prizes','prizes_type','nowprizes'));
+		$winners = Staff::where('prize_code',$name)->get();
+
+		return view('stafflotto.show',compact('staffs','prizes','prizes_type','nowprizes','winners'));
 	}
 
-	public function update($name)
+	public function update($name,Staff $candidate)
 	{
-		return '123';
-	}
+		$staffs = Staff::get();
+		$prizes = Prize::get();
+		$prizes_type = Prize::distinct()->select('type')->get();
+		$nowprizes = Prize::where('name',$name)->get();
+		$winnersnum = Staff::where('prize_code',$name)->count();
 
+		
+		if($winnersnum<=0)
+		{
+			if($nowprizes[0]->level == 0)
+			{
+				$candidates = $candidate->where('prize_code','-1')->get();
+				$candidatesnum = $candidate->where('prize_code','-1')->count();
+
+				if($candidatesnum-$nowprizes[0]->amount >= 0)
+				{
+					for($j = 0; $j<10000; $j++)
+					{
+						$randnum1 = rand (0,($candidatesnum-1));
+						$randnum2 = rand (0,($candidatesnum-1));
+
+						$temp =  $candidates[$randnum1];
+						$candidates[$randnum1] = $candidates[$randnum2];
+						$candidates[$randnum2] = $temp;
+					}
+
+					for($i = 0; $i<$nowprizes[0]->amount; $i++)
+					{				
+						$candidates[$i]->prize_code = $name;
+						$candidates[$i]->save();				
+					}
+				}
+
+				else
+				{
+					return '剩餘抽獎人數不足';
+				}
+			}
+
+			else
+			{
+				$candidates = $candidate->where('prize_code','-1')->where('level','1')->get();
+				$candidatesnum = $candidate->where('prize_code','-1')->where('level','1')->count();
+
+				if($candidatesnum-$nowprizes[0]->amount >= 0)
+				{
+					for($j = 0; $j<10000; $j++)
+					{
+						$randnum1 = rand (0,($candidatesnum-1));
+						$randnum2 = rand (0,($candidatesnum-1));
+
+						$temp =  $candidates[$randnum1];
+						$candidates[$randnum1] = $candidates[$randnum2];
+						$candidates[$randnum2] = $temp;
+					}
+
+					for($i = 0; $i<$nowprizes[0]->amount; $i++)
+					{				
+						$candidates[$i]->prize_code = $name;
+						$candidates[$i]->save();				
+					}
+				}
+
+				else
+				{
+					return '剩餘抽獎人數不足';
+				}			
+			}
+		}
+
+		
+		return redirect('/stafflotto/' . $name);			
+	}
 }
