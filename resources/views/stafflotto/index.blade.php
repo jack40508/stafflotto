@@ -38,7 +38,7 @@
 					  <ul class="dropdown-menu" role="menu">
 					  	@foreach($prizes as $index => $prize)
 							@if($prize->type == $prize_type->type)
-								<li><a href="/stafflotto/{{ $prize->name }}">{{ $prize->name }}　　　　　{{ $prize->amount }}</a></li>
+								<li><a href="/stafflotto/{{ $prize->prize_ID }}">{{ $prize->name }}　　　　　{{ $prize->amount }}</a></li>
 								<li class="divider"></li>
 							@endif
 						@endforeach

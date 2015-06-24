@@ -14,12 +14,14 @@ class CreatePrizesTable extends Migration {
 	{
 		Schema::create('prizes', function(Blueprint $table)
 		{
-			$table->increments('id');
+			//$table->increments('id');
+			$table->increments('prize_ID');
 			$table->string('name');
-			$table->string('code');
 			$table->string('type');
+			$table->string('activity_ID');
 			$table->boolean('level');
 			$table->integer('amount');
+			$table->boolean('status')->default('1');
 			$table->timestamps();
 		});
 	}
