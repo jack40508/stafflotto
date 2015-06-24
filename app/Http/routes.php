@@ -15,11 +15,18 @@ Route::get('/', 'StaffLottoController@index');
 
 Route::get('home', 'StaffLottoController@index');
 
+
 Route::get('stafflotto', 'StaffLottoController@index');
 
 Route::get('stafflotto/{index}', 'StaffLottoController@show');
 
 Route::patch('stafflotto/{index}', 'StaffLottoController@update');
+
+
+Route::get('backstage', 'BackstageController@index');
+
+Route::get('backstage/{index}', 'BackstageController@show');
+
 
 
 

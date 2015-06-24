@@ -6,7 +6,7 @@
 <html lang="en">	
 <head>
 	<meta charset="UTF-8">
-	<title>Stafflotto_index</title>
+	<title>Stafflotto_show</title>
 	<link href='http://fonts.googleapis.com/css?family=Indie+Flower' rel='stylesheet' type='text/css'>
 </head>
 <body>
@@ -38,7 +38,8 @@
 		   	<thead>
 		      	<tr>
 			        <th>中獎號碼</th>
-			        <th>中獎姓名</th>
+			        <th>員工編號</th>
+			        <th>員工姓名</th>
 		      	</tr>
 		   	</thead>
 	   		
@@ -46,6 +47,7 @@
 			   @if(!empty($winners))
 					@foreach($winners as $index => $winner)
 						<tr>
+							<td>{{ $winner->activity_number }}</td>
 							<td>{{ $winner->staff_ID }}</td>
 							<td>{{ $winner->name }}</td>
 						</tr>

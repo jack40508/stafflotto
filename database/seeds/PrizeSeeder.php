@@ -21,7 +21,6 @@ class PrizeSeeder extends Seeder {
     Prize::create([
       
       'name' => '獎品一',
-      'prize_ID' => '0001',
       'level' => '0',
       'type' => '獎項一',
       'amount' => 1,
@@ -32,7 +31,6 @@ class PrizeSeeder extends Seeder {
     Prize::create([
       
       'name' => '獎品二',
-      'prize_ID' => '0002',
       'level' => '0',
       'type' => '獎項一',
       'amount' => 2,
@@ -43,7 +41,6 @@ class PrizeSeeder extends Seeder {
     Prize::create([
       
       'name' => '獎品三',
-      'prize_ID' => '0003',
       'level' => '0',
       'type' => '獎項二',
       'amount' => 3,
@@ -54,7 +51,6 @@ class PrizeSeeder extends Seeder {
     Prize::create([
       
       'name' => '獎品四',
-      'prize_ID' => '0004',
       'level' => '1',
       'type' => '獎項二',
       'amount' => 1,
