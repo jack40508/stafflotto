@@ -20,32 +20,32 @@ class StaffLottoController extends Controller {
 		return view('stafflotto.index',compact('staffs','prizes','prizes_type'));
 	}
 
-	public function show($name)
+	public function show($prize_ID)
 	{
 		$staffs = Staff::get();
 		$prizes = Prize::get();
 		$prizes_type = Prize::distinct()->select('type')->get();
-		$nowprizes = Prize::where('name',$name)->get();
-		$winners = Staff::where('prize_code',$name)->get();
+		$nowprizes = Prize::where('prize_ID',$prize_ID)->get();
+		$winners = Staff::where('prize_ID',$prize_ID)->get();
 
 		return view('stafflotto.show',compact('staffs','prizes','prizes_type','nowprizes','winners'));
 	}
 
-	public function update($name,Staff $candidate)
+	public function update($prize_ID,Staff $candidate)
 	{
 		$staffs = Staff::get();
 		$prizes = Prize::get();
 		$prizes_type = Prize::distinct()->select('type')->get();
-		$nowprizes = Prize::where('name',$name)->get();
-		$winnersnum = Staff::where('prize_code',$name)->count();
+		$nowprizes = Prize::where('prize_ID',$prize_ID)->get();
+		$winnersnum = Staff::where('prize_ID',$prize_ID)->count();
 
 		
 		if($winnersnum<=0)
 		{
 			if($nowprizes[0]->level == 0)
 			{
-				$candidates = $candidate->where('prize_code','-1')->get();
-				$candidatesnum = $candidate->where('prize_code','-1')->count();
+				$candidates = $candidate->where('prize_ID','-1')->get();
+				$candidatesnum = $candidate->where('prize_ID','-1')->count();
 
 				if($candidatesnum-$nowprizes[0]->amount >= 0)
 				{
@@ -61,7 +61,7 @@ class StaffLottoController extends Controller {
 
 					for($i = 0; $i<$nowprizes[0]->amount; $i++)
 					{				
-						$candidates[$i]->prize_code = $name;
+						$candidates[$i]->prize_ID = $prize_ID;
 						$candidates[$i]->save();				
 					}
 				}
@@ -74,8 +74,8 @@ class StaffLottoController extends Controller {
 
 			else
 			{
-				$candidates = $candidate->where('prize_code','-1')->where('level','1')->get();
-				$candidatesnum = $candidate->where('prize_code','-1')->where('level','1')->count();
+				$candidates = $candidate->where('prize_ID','-1')->where('level','1')->get();
+				$candidatesnum = $candidate->where('prize_ID','-1')->where('level','1')->count();
 
 				if($candidatesnum-$nowprizes[0]->amount >= 0)
 				{
@@ -91,7 +91,7 @@ class StaffLottoController extends Controller {
 
 					for($i = 0; $i<$nowprizes[0]->amount; $i++)
 					{				
-						$candidates[$i]->prize_code = $name;
+						$candidates[$i]->prize_ID = $prize_ID;
 						$candidates[$i]->save();				
 					}
 				}
@@ -104,6 +104,6 @@ class StaffLottoController extends Controller {
 		}
 
 		
-		return redirect('/stafflotto/' . $name);			
+		return redirect('/stafflotto/' . $prize_ID);			
 	}
 }

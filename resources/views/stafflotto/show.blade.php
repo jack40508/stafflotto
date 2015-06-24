@@ -27,7 +27,7 @@
 					
 					<div class="col-md-4">
 						@foreach($nowprizes as $index => $nowprize)
-							{!! Form::model($nowprize,['url' => '/stafflotto/' . $nowprize->name  , 'method' => 'PATCH'])!!}
+							{!! Form::model($nowprize,['url' => '/stafflotto/' . $nowprize->prize_ID  , 'method' => 'PATCH'])!!}
 							  	{!! Form::submit('開始抽獎',['class'=>'btn btn-primary']) !!}
 							{!! Form::close() !!}
 						@endforeach
@@ -46,7 +46,7 @@
 			   @if(!empty($winners))
 					@foreach($winners as $index => $winner)
 						<tr>
-							<td>{{ $winner->code }}</td>
+							<td>{{ $winner->staff_ID }}</td>
 							<td>{{ $winner->name }}</td>
 						</tr>
 				 	@endforeach
