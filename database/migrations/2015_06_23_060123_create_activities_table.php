@@ -16,6 +16,7 @@ class CreateActivitiesTable extends Migration {
 		{
 			$table->increments('id');
 			$table->string('name');
+			$table->boolean('status')->default('0');
 			$table->timestamps();
 		});
 	}

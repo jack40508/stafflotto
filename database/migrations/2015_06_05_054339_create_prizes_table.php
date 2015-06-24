@@ -21,6 +21,7 @@ class CreatePrizesTable extends Migration {
 			$table->string('activity_ID');
 			$table->boolean('level');
 			$table->integer('amount');
+			$table->boolean('status')->default('1');
 			$table->timestamps();
 		});
 	}
