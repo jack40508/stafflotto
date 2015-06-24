@@ -14,7 +14,6 @@ class CreatePrizesTable extends Migration {
 	{
 		Schema::create('prizes', function(Blueprint $table)
 		{
-			//$table->increments('id');
 			$table->increments('prize_ID');
 			$table->string('name');
 			$table->string('type');
