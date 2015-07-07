@@ -27,6 +27,9 @@ Route::get('backstage', 'BackstageController@index');
 
 Route::get('backstage/{index}', 'BackstageController@show');
 
+Route::get('backstage/{index}/{code}/edit', 'BackstageController@edit');
+
+Route::patch('backstage/{index}/{code}', 'BackstageController@update');
 
 
 

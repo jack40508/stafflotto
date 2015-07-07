@@ -28,7 +28,7 @@ class StaffLottoController extends Controller {
 		$staffs = Staff::where('activity_ID',$activities[0]->id)->get();
 		$prizes = Prize::where('activity_ID',$activities[0]->id)->get();
 		$prizes_type = Prize::where('activity_ID',$activities[0]->id)->distinct()->select('type')->get();
-		$nowprizes = Prize::where('activity_ID',$activities[0]->id)->where('prize_ID',$prize_ID)->get();
+		$nowprizes = Prize::where('activity_ID',$activities[0]->id)->where('id',$prize_ID)->get();
 		$winners = Staff::where('activity_ID',$activities[0]->id)->where('prize_ID',$prize_ID)->get();
 
 		return view('stafflotto.show',compact('staffs','prizes','prizes_type','nowprizes','winners'));
@@ -40,7 +40,7 @@ class StaffLottoController extends Controller {
 		$staffs = Staff::where('activity_ID',$activities[0]->id)->get();
 		$prizes = Prize::where('activity_ID',$activities[0]->id)->get();
 		$prizes_type = Prize::where('activity_ID',$activities[0]->id)->distinct()->select('type')->get();
-		$nowprizes = Prize::where('activity_ID',$activities[0]->id)->where('prize_ID',$prize_ID)->get();
+		$nowprizes = Prize::where('activity_ID',$activities[0]->id)->where('id',$prize_ID)->get();
 		$winnersnum = Staff::where('activity_ID',$activities[0]->id)->where('prize_ID',$prize_ID)->count();
 
 		

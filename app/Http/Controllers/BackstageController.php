@@ -25,7 +25,7 @@ class BackstageController extends Controller {
 				break;
 
 			case 'award':
-				$activities = Activity::where('status',true)->get();
+				$activities = Activity::get();
 				$prizes = Prize::where('activity_ID',$activities[0]->id)->orderby('type')->get();
 				return view('backstage.show',compact('tag','activities','prizes'));
 				break;
@@ -40,8 +40,66 @@ class BackstageController extends Controller {
 				return view('backstage.show',compact('tag'));
 				break;
 		}
+	}
 
-		
+	public function edit($tag,$code)
+	{
+		switch ($tag) {
+			case 'activity':
+				$activities = Activity::where('id',$code)->get();
+				return view('backstage.edit',compact('tag','activities'));
+				break;
+
+			case 'award':
+				$activities = Activity::get();
+
+				for($i=1; $i<=Activity::count(); $i++)
+				{
+					$activities_name[$i] = $activities[$i-1]->name;
+				}
+
+				$prizes = Prize::where('id',$code)->get();
+				return view('backstage.edit',compact('tag','activities_ID','activities_name','prizes'));
+				break;
+
+			case 'staff':
+				$staffs = Staff::where('id',$code)->get();
+				return view('backstage.edit',compact('tag','staffs'));
+				break;
+			
+			default:
+				return view('backstage.edit',compact('tag'));
+				break;
+		}
+	}
+
+	public function update($tag,$code,Request $request)
+	{
+		/*switch ($tag) {
+			case 'activity':
+				$activities = Activity::where('id',$code)->get();
+				return view('backstage.edit',compact('tag','activities'));
+				break;
+
+			case 'award':
+				$prizes = Prize::where('id',$code)->first();
+
+				$prizes->fill($request->input())->save();
+
+				return redirect('/backstage/' . $tag);
+				break;
+
+			case 'staff':
+				$staffs = Staff::where('id',$code)->get();
+				return view('backstage.edit',compact('tag','staffs'));
+				break;
+			
+			default:
+				return view('backstage.edit',compact('tag'));
+				break;
+		}*/
+
+		dd(\Request::input());
 	}
 
 }

@@ -8,7 +8,7 @@
 		<title>Backstage_show</title>
 	</head>
 	<body>
-		@if( $tag  == 'activity')
+		@if($tag  == 'activity')
 			<table class="table table-striped">
 				<thead>
 			      	<tr>
@@ -26,14 +26,14 @@
 								<td>{{ $activity->name }}</td>
 								<td>{{ $activity->created_at }}</td>
 								<td>{{ $activity->status }}</td>
-								<td>編輯</td>
+								<td><a href="/backstage/{{$tag}}/{{ $activity->id }}/edit">編輯</a></td>
 							</tr>
 					 	@endforeach
 					@endif
 				</tbody>
 			</table>
 
-		@elseif( $tag  == 'award')
+		@elseif($tag  == 'award')
 			<table class="table table-striped">
 				<thead>
 			      	<tr>
@@ -51,7 +51,7 @@
 				   @if(!empty($prizes))
 						@foreach($prizes as $index => $prize)
 							<tr>
-								<td>{{ $activities[0]->name }}</td>
+								<td>{{ $activities[$prize->activity_ID-1]->name }}</td>
 								<td>{{ $prize->type }}</td>
 								<td>{{ $prize->name }}</td>
 								<td>
@@ -63,14 +63,16 @@
 								</td>
 								<td>{{ $prize->amount }}</td>
 								<td>{{ $prize->status }}</td>
-								<td>編輯</td>
+								<td>
+								<a href="/backstage/{{$tag}}/{{ $prize->id }}/edit">編輯</a>
+								</td>
 							</tr>
 					 	@endforeach
 					@endif
 				</tbody>
 			</table>
 
-		@elseif( $tag  == 'staff')
+		@elseif($tag  == 'staff')
 			<table class="table table-striped">
 				<thead>
 			      	<tr>
@@ -88,7 +90,7 @@
 				   @if(!empty($staffs))
 						@foreach($staffs as $index => $staff)
 							<tr>
-								<td>{{ $activities[0]->name }}</td>
+								<td>{{ $activities[$staff->activity_ID-1]->name }}</td>
 								<td>{{ $staff->staff_ID }}</td>
 								<td>{{ $staff->activity_number }}</td>
 								<td>{{ $staff->name }}</td>
@@ -100,7 +102,7 @@
 									@endif
 								</td>
 								<td>{{ $staff->status }}</td>
-								<td>編輯</td>
+								<td><a href="/backstage/{{$tag}}/{{ $staff->id }}/edit">編輯</a></td>
 							</tr>
 					 	@endforeach
 					@endif

@@ -6,4 +6,6 @@ class Prize extends Model {
 
 	//
 
+	protected $fillable = ['name','type','level','amount','status'];
+
 }
