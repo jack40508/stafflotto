@@ -6,4 +6,5 @@ class Activity extends Model {
 
 	//
 
+	protected $fillable = ['name','status'];
 }

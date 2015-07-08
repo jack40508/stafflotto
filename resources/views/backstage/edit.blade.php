@@ -12,7 +12,46 @@
 <div class="container">
 	
 	@if($tag  == 'activity')
-	
+		{!! Form::model($activities,['url' => '/backstage/' . $tag . "/" . $activities[0]->id, 'method' => 'PATCH'])!!}
+
+		<table class="table table-striped">
+			<thead>
+				<tr>
+					<th><h2>編輯</h2></th>
+					<th></th>
+				</tr>
+			</thead>
+			   		
+			<tbody>
+				@if(!empty($activities))
+				<tr>
+					<td><h4>活動名稱：</h4></td>
+					<td>
+						<div class="form-group">
+							{!! Form::text('name',$activities[0]->name,['class' => 'form-control']) !!}
+							{!! Form::close() !!}
+						</div>
+					</td>
+				</tr>
+
+				<tr>
+					<td><h4>活動狀態：</h4></td>
+					<td>
+						<div class="form-group">
+							{!! Form::select('status',array('0' => '關', '1' => '開'),$activities[0]->status,array('class'=>'form-control')) !!}
+							{!! Form::close() !!}
+						</div>
+					</td>
+				</tr>
+				@endif
+			</tbody>
+		</table>
+
+		
+		{!! Form::submit('確認',['class'=>'btn btn-primary']) !!}
+
+		{!! Form::close() !!}
+
 	@elseif($tag  == 'award')
 
 		{!! Form::model($prizes,['url' => '/backstage/' . $tag . "/" . $prizes[0]->id, 'method' => 'PATCH'])!!}
@@ -54,7 +93,6 @@
 							{!! Form::select('activity_ID',array($activities_name),$prizes[0]->activity_ID,array('class'=>'form-control')) !!}
 							{!! Form::close() !!}
 						</div>
-						
 					</td>
 				</tr>
 				
@@ -95,8 +133,125 @@
 		{!! Form::submit('確認',['class'=>'btn btn-primary']) !!}
 
 		{!! Form::close() !!}
-	@endif
 
+	@elseif($tag  == 'staff')
+		{!! Form::model($staffs,['url' => '/backstage/' . $tag . "/" . $staffs[0]->id, 'method' => 'PATCH'])!!}
+
+		<table class="table table-striped">
+			<thead>
+				<tr>
+					<th><h2>編輯</h2></th>
+					<th></th>
+				</tr>
+			</thead>
+			   		
+			<tbody>
+				@if(!empty($staffs))
+				<tr>
+					<td><h4>員工名稱：</h4></td>
+					<td>
+						<div class="form-group">
+							{!! Form::text('name',$staffs[0]->name,['class' => 'form-control']) !!}
+							{!! Form::close() !!}
+						</div>
+					</td>
+				</tr>
+
+				<tr>
+					<td><h4>員工編號：</h4></td>
+					<td>
+						<div class="form-group">
+							{!! Form::text('staff_ID',$staffs[0]->staff_ID,['class' => 'form-control']) !!}
+							{!! Form::close() !!}
+						</div>
+					</td>
+				</tr>
+
+				<tr>
+					<td><h4>活動編號：</h4></td>
+					<td>
+						<div class="form-group">
+							{!! Form::text('activity_number',$staffs[0]->activity_number,['class' => 'form-control']) !!}
+							{!! Form::close() !!}
+						</div>
+					</td>
+				</tr>
+
+				<tr>
+					<td><h4>員工等級：</h4></td>
+					<td>
+						<div class="form-group">
+							{!! Form::select('level',array('0' => '一般', '1' => '特殊'),$staffs[0]->level,array('class'=>'form-control')) !!}
+							{!! Form::close() !!}
+						</div>
+					</td>
+				</tr>
+
+				<tr>
+					<td><h4>員工所屬活動：</h4></td>
+					<td>				
+						<div class="form-group">
+							{!! Form::select('activity_ID',array($activities_name),$staffs[0]->activity_ID,array('class'=>'form-control')) !!}
+							{!! Form::close() !!}
+						</div>
+						
+					</td>
+				</tr>
+
+				<tr>
+					<td><h4>員工參與狀態：</h4></td>
+					<td>
+						<div class="form-group">
+							{!! Form::select('status',array('0' => '未參與', '1' => '參與'),$staffs[0]->status,array('class'=>'form-control')) !!}
+							{!! Form::close() !!}
+						</div>
+					</td>
+				</tr>
+				@endif
+			</tbody>
+		</table>
+
+		
+		{!! Form::submit('確認',['class'=>'btn btn-primary']) !!}
+
+		{!! Form::close() !!}
+
+	@elseif($tag  == 'winner')
+	{!! Form::model($winners,['url' => '/backstage/' . $tag . "/" . $winners[0]->id, 'method' => 'PATCH'])!!}
+
+		<table class="table table-striped">
+			<thead>
+				<tr>
+					<th><h2>編輯</h2></th>
+					<th></th>
+				</tr>
+			</thead>
+			   		
+			<tbody>
+				@if(!empty($winners))
+				<tr>
+					<td><h4>獲得獎項：</h4></td>
+					<td>
+						<div class="form-group">
+							@if(!empty($prizes_name))
+							{!! Form::select('prize_ID',array('-1'=>'無',$prizes_name),$winners[0]->prize_ID,array('class'=>'form-control')) !!}
+							{!! Form::close() !!}
+
+							@else
+							該次活動查無獎品
+							@endif
+						</div>
+					</td>
+				</tr>
+				@endif
+			</tbody>
+		</table>
+
+		{!! Form::submit('確認',['class'=>'btn btn-primary']) !!}
+
+		{!! Form::close() !!}
+
+	@endif
 	
 </div>
 </body>

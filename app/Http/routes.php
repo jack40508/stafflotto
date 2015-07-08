@@ -31,7 +31,11 @@ Route::get('backstage/{index}/{code}/edit', 'BackstageController@edit');
 
 Route::patch('backstage/{index}/{code}', 'BackstageController@update');
 
+Route::patch('backstage/{index}/{code}/delete', 'BackstageController@delete');
 
+Route::get('backstage/{index}/insert', 'BackstageController@insert');
+
+Route::patch('backstage/{index}', 'BackstageController@create');
 
 Route::controllers([
 	'auth' => 'Auth\AuthController',

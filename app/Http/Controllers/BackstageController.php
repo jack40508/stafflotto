@@ -26,14 +26,21 @@ class BackstageController extends Controller {
 
 			case 'award':
 				$activities = Activity::get();
-				$prizes = Prize::where('activity_ID',$activities[0]->id)->orderby('type')->get();
+				$prizes = Prize::orderby('type')->get();
 				return view('backstage.show',compact('tag','activities','prizes'));
 				break;
 
 			case 'staff':
-				$activities = Activity::where('status',true)->get();
-				$staffs = Staff::where('activity_ID',$activities[0]->id)->get();
+				$activities = Activity::get();
+				$staffs = Staff::get();
 				return view('backstage.show',compact('tag','activities','staffs'));
+				break;
+
+			case 'winner':
+				$activities = Activity::get();
+				$prizes = Prize::orderby('type')->get();
+				$winners = Staff::where('prize_ID','!=','-1')->orderby('prize_ID')->get();
+				return view('backstage.show',compact('tag','activities','prizes','winners'));
 				break;
 			
 			default:
@@ -51,7 +58,7 @@ class BackstageController extends Controller {
 				break;
 
 			case 'award':
-				$activities = Activity::get();
+				$activities = Activity::orderby('id')->get();
 
 				for($i=1; $i<=Activity::count(); $i++)
 				{
@@ -59,12 +66,36 @@ class BackstageController extends Controller {
 				}
 
 				$prizes = Prize::where('id',$code)->get();
-				return view('backstage.edit',compact('tag','activities_ID','activities_name','prizes'));
+				return view('backstage.edit',compact('tag','activities_name','prizes'));
 				break;
 
 			case 'staff':
+				
+				$activities = Activity::orderby('id')->get();
+
+				for($i=1; $i<=Activity::count(); $i++)
+				{
+					$activities_name[$i] = $activities[$i-1]->name;
+				}
+
 				$staffs = Staff::where('id',$code)->get();
-				return view('backstage.edit',compact('tag','staffs'));
+
+				return view('backstage.edit',compact('tag','activities_name','staffs'));
+				break;
+
+				case 'winner':
+
+				$winners = Staff::where('id',$code)->get();
+
+				$prizes = Prize::where('activity_ID',$winners[0]->activity_ID)->orderby('id')->get();
+
+				for($i=1; $i<=Prize::where('activity_ID',$winners[0]->activity_ID)->count(); $i++)
+				{
+					$prizes_name[$i] = $prizes[$i-1]->name;
+				}
+
+				return view('backstage.edit',compact('tag','prizes_name','winners'));
+
 				break;
 			
 			default:
@@ -75,13 +106,26 @@ class BackstageController extends Controller {
 
 	public function update($tag,$code,Request $request)
 	{
-		/*switch ($tag) {
+		switch ($tag) {
 			case 'activity':
-				$activities = Activity::where('id',$code)->get();
-				return view('backstage.edit',compact('tag','activities'));
+				
+				//如果開啟一個活動，關閉原本開啟的活動，且若無其他活動則跳過
+				if($request->get('status') == '1' && Activity::where('status','1')->count() == '1')
+				{
+					$activities = Activity::where('status','1')->first();
+
+					$activities->status = '0';
+					$activities->save();
+				}
+				$activities = Activity::where('id',$code)->first();
+
+				$activities->fill($request->input())->save();
+				
+				return redirect('/backstage/' . $tag);
 				break;
 
 			case 'award':
+
 				$prizes = Prize::where('id',$code)->first();
 
 				$prizes->fill($request->input())->save();
@@ -90,16 +134,88 @@ class BackstageController extends Controller {
 				break;
 
 			case 'staff':
-				$staffs = Staff::where('id',$code)->get();
-				return view('backstage.edit',compact('tag','staffs'));
+
+				$staffs = Staff::where('id',$code)->first();
+
+				$staffs->fill($request->input())->save();
+
+				return redirect('/backstage/' . $tag);
+				break;
+
+			case 'winner':
+
+				$winner = Staff::where('id',$code)->first();
+
+				$winner->fill($request->input())->save();
+
+				if($request->get('prize_ID') == '-1')
+				{
+					$winner->status = '0';
+					$winner->save();
+				}
+				
+				return redirect('/backstage/' . $tag);
 				break;
 			
 			default:
-				return view('backstage.edit',compact('tag'));
+				return redirect('/backstage/' . $tag);
 				break;
-		}*/
-
-		dd(\Request::input());
+		}
 	}
 
+	public function delete($tag,$code)
+	{
+		switch ($tag) {
+			case 'activity':
+				Activity::where('id',$code)->delete();
+				Staff::where('activity_ID',$code)->delete();
+				Prize::where('activity_ID',$code)->delete();
+				
+				return redirect('/backstage/' . $tag);
+
+				break;
+
+			case 'award':
+				Prize::where('id',$code)->delete();
+				
+				//獎品被刪除，則獲得該獎品的人就被取消獲獎資格
+				$winners = Staff::where('prize_ID',$code)->get();
+
+				foreach ($winners as $index => $winner) {
+					$winner->prize_ID = '-1';
+					$winner->save();
+				}
+
+				return redirect('/backstage/' . $tag);
+				break;
+
+			case 'staff':
+				Staff::where('id',$code)->delete();
+				return redirect('/backstage/' . $tag);
+				break;
+			
+			default:
+
+				break;
+		}
+	}
+
+	public function insert($tag)
+	{
+		return view('backstage.insert',compact('tag'));
+	}
+
+	public function create($tag,Request $request)
+	{
+		if($request->get('status') == '1' && Activity::where('status','1')->count() == '1')
+		{
+			$activities = Activity::where('status','1')->first();
+
+			$activities->status = '0';
+			$activities->save();
+		}
+
+		Activity::create(array('name' => $request->get('name'), 'status' => $request->get('status')));
+		return redirect('/backstage/' . $tag);
+	}
 }
