@@ -15,13 +15,13 @@ class CreateStaffTable extends Migration {
 		Schema::create('staff', function(Blueprint $table)
 		{
 			$table->increments('id');
-			$table->string('name');
-			$table->string('staff_ID');
-			$table->string('activity_number');
-			$table->boolean('level');
-			$table->string('activity_ID');
-			$table->string('prize_ID')->default('-1');
-			$table->boolean('status')->default('1');
+			$table->string('staff_name');
+			$table->string('staff_number');
+			$table->string('staff_activity_number');
+			$table->boolean('staff_level');
+			$table->string('activity_id');
+			$table->string('prize_id')->default('-1');
+			$table->boolean('staff_status')->default('1');
 			$table->timestamps();
 		});
 	}

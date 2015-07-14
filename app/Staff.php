@@ -6,5 +6,5 @@ class Staff extends Model {
 
 	//
 
-	protected $fillable = ['name','staff_ID','activity_number','level','prize_ID','status','activity_ID'];
+	protected $fillable = ['staff_name','staff_number','staff_activity_number','staff_level','prize_id','staff_status','activity_id'];
 }

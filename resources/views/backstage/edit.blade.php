@@ -12,7 +12,7 @@
 <div class="container">
 	
 	@if($tag  == 'activity')
-		{!! Form::model($activities,['url' => '/backstage/' . $tag . "/" . $activities[0]->id, 'method' => 'PATCH'])!!}
+		{!! Form::model($activities,['url' => '/backstage/' . $tag . "/" . $activities->id, 'method' => 'PATCH'])!!}
 
 		<table class="table table-striped">
 			<thead>
@@ -28,7 +28,7 @@
 					<td><h4>活動名稱：</h4></td>
 					<td>
 						<div class="form-group">
-							{!! Form::text('name',$activities[0]->name,['class' => 'form-control']) !!}
+							{!! Form::text('activity_name',$activities->activity_name,['class' => 'form-control']) !!}
 							{!! Form::close() !!}
 						</div>
 					</td>
@@ -38,7 +38,7 @@
 					<td><h4>活動狀態：</h4></td>
 					<td>
 						<div class="form-group">
-							{!! Form::select('status',array('0' => '關', '1' => '開'),$activities[0]->status,array('class'=>'form-control')) !!}
+							{!! Form::select('activity_status',array('0' => '關', '1' => '開'),$activities->activity_status,array('class'=>'form-control')) !!}
 							{!! Form::close() !!}
 						</div>
 					</td>
@@ -54,7 +54,60 @@
 
 	@elseif($tag  == 'award')
 
-		{!! Form::model($prizes,['url' => '/backstage/' . $tag . "/" . $prizes[0]->id, 'method' => 'PATCH'])!!}
+		{!! Form::model($awards,['url' => '/backstage/' . $tag . "/" . $awards->id, 'method' => 'PATCH'])!!}
+
+		<table class="table table-striped">
+			<thead>
+				<tr>
+					<th><h2>編輯</h2></th>
+					<th></th>
+				</tr>
+			</thead>
+			   		
+			<tbody>
+				@if(!empty($awards))
+				<tr>
+					<td><h4>獎項名稱：</h4></td>
+					<td>
+						<div class="form-group">
+							{!! Form::text('award_name',$awards->award_name,['class' => 'form-control']) !!}
+							{!! Form::close() !!}
+						</div>
+					</td>
+				</tr>
+
+				<tr>
+					<td><h4>獎項所屬活動：</h4></td>
+					<td>				
+						<div class="form-group">
+							{!! Form::select('activity_id',$activities_name,$nowactivity,array('class'=>'form-control')) !!}
+							{!! Form::close() !!}
+						</div>
+					</td>
+				</tr>
+				
+
+				<tr>
+					<td><h4>獎項狀態：</h4></td>
+					<td>
+						<div class="form-group">
+							{!! Form::select('award_status',array('0' => '關', '1' => '開'),$awards->award_status,array('class'=>'form-control')) !!}
+							{!! Form::close() !!}
+						</div>
+					</td>
+				</tr>
+				@endif
+			</tbody>
+		</table>
+
+		
+		{!! Form::submit('確認',['class'=>'btn btn-primary']) !!}
+
+		{!! Form::close() !!}
+
+	@elseif($tag == 'prize')
+
+		{!! Form::model($prizes,['url' => '/backstage/' . $pretag . "/" . $prizes->award_id . "/" . $tag . "/" . $prizes->id, 'method' => 'PATCH'])!!}
 
 		<table class="table table-striped">
 			<thead>
@@ -70,37 +123,27 @@
 					<td><h4>獎品名稱：</h4></td>
 					<td>
 						<div class="form-group">
-							{!! Form::text('name',$prizes[0]->name,['class' => 'form-control']) !!}
+							{!! Form::text('prize_name',$prizes->prize_name,['class' => 'form-control']) !!}
 							{!! Form::close() !!}
 						</div>
 					</td>
 				</tr>
 
 				<tr>
-					<td><h4>獎品獎項：</h4></td>
-					<td>
-						<div class="form-group">
-							{!! Form::text('type',$prizes[0]->type,['class' => 'form-control']) !!}
-							{!! Form::close() !!}
-						</div>
-					</td>
-				</tr>
-
-				<tr>
-					<td><h4>獎品所屬活動：</h4></td>
+					<td><h4>獎品所屬獎項：</h4></td>
 					<td>				
 						<div class="form-group">
-							{!! Form::select('activity_ID',array($activities_name),$prizes[0]->activity_ID,array('class'=>'form-control')) !!}
+							{!! Form::select('award_id',$awards_name,$nowaward,array('class'=>'form-control')) !!}
 							{!! Form::close() !!}
 						</div>
 					</td>
 				</tr>
-				
+
 				<tr>
 					<td><h4>獎品等級：</h4></td>
 					<td>
 						<div class="form-group">
-							{!! Form::select('level',array('0' => '一般', '1' => '特殊'),$prizes[0]->level,array('class'=>'form-control')) !!}
+							{!! Form::select('prize_level',array('0' => '一般', '1' => '特殊'),$prizes->prize_level,array('class'=>'form-control')) !!}
 							{!! Form::close() !!}
 						</div>
 					</td>
@@ -110,17 +153,17 @@
 					<td><h4>獎品數量：</h4></td>
 					<td>
 						<div class="form-group">
-							{!! Form::text('amount',$prizes[0]->amount,['class' => 'form-control']) !!}
+							{!! Form::selectRange('prize_amount', 1, 100,$prizes->prize_amount,array('class'=>'form-control'))!!}
 							{!! Form::close() !!}
 						</div>
 					</td>
-				</tr>
+				</tr>				
 
 				<tr>
 					<td><h4>獎品狀態：</h4></td>
 					<td>
 						<div class="form-group">
-							{!! Form::select('status',array('0' => '關', '1' => '開'),$prizes[0]->status,array('class'=>'form-control')) !!}
+							{!! Form::select('prize_status',array('0' => '關', '1' => '開'),$prizes->prize_status,array('class'=>'form-control')) !!}
 							{!! Form::close() !!}
 						</div>
 					</td>
@@ -134,8 +177,9 @@
 
 		{!! Form::close() !!}
 
+
 	@elseif($tag  == 'staff')
-		{!! Form::model($staffs,['url' => '/backstage/' . $tag . "/" . $staffs[0]->id, 'method' => 'PATCH'])!!}
+		{!! Form::model($staffs,['url' => '/backstage/' . $tag . "/" . $staffs->id, 'method' => 'PATCH'])!!}
 
 		<table class="table table-striped">
 			<thead>
@@ -151,7 +195,7 @@
 					<td><h4>員工名稱：</h4></td>
 					<td>
 						<div class="form-group">
-							{!! Form::text('name',$staffs[0]->name,['class' => 'form-control']) !!}
+							{!! Form::text('staff_name',$staffs->staff_name,['class' => 'form-control']) !!}
 							{!! Form::close() !!}
 						</div>
 					</td>
@@ -161,7 +205,7 @@
 					<td><h4>員工編號：</h4></td>
 					<td>
 						<div class="form-group">
-							{!! Form::text('staff_ID',$staffs[0]->staff_ID,['class' => 'form-control']) !!}
+							{!! Form::text('staff_number',$staffs->staff_number,['class' => 'form-control']) !!}
 							{!! Form::close() !!}
 						</div>
 					</td>
@@ -171,7 +215,7 @@
 					<td><h4>活動編號：</h4></td>
 					<td>
 						<div class="form-group">
-							{!! Form::text('activity_number',$staffs[0]->activity_number,['class' => 'form-control']) !!}
+							{!! Form::text('staff_activity_number',$staffs->staff_activity_number,['class' => 'form-control']) !!}
 							{!! Form::close() !!}
 						</div>
 					</td>
@@ -181,7 +225,7 @@
 					<td><h4>員工等級：</h4></td>
 					<td>
 						<div class="form-group">
-							{!! Form::select('level',array('0' => '一般', '1' => '特殊'),$staffs[0]->level,array('class'=>'form-control')) !!}
+							{!! Form::select('staff_level',array('0' => '一般', '1' => '特殊'),$staffs->staff_level,array('class'=>'form-control')) !!}
 							{!! Form::close() !!}
 						</div>
 					</td>
@@ -191,7 +235,7 @@
 					<td><h4>員工所屬活動：</h4></td>
 					<td>				
 						<div class="form-group">
-							{!! Form::select('activity_ID',array($activities_name),$staffs[0]->activity_ID,array('class'=>'form-control')) !!}
+							{!! Form::select('activity_id',$activities_name,$nowactivity,array('class'=>'form-control')) !!}
 							{!! Form::close() !!}
 						</div>
 						
@@ -202,7 +246,7 @@
 					<td><h4>員工參與狀態：</h4></td>
 					<td>
 						<div class="form-group">
-							{!! Form::select('status',array('0' => '未參與', '1' => '參與'),$staffs[0]->status,array('class'=>'form-control')) !!}
+							{!! Form::select('staff_status',array('0' => '未參與', '1' => '參與'),$staffs->staff_status,array('class'=>'form-control')) !!}
 							{!! Form::close() !!}
 						</div>
 					</td>
@@ -217,7 +261,7 @@
 		{!! Form::close() !!}
 
 	@elseif($tag  == 'winner')
-	{!! Form::model($winners,['url' => '/backstage/' . $tag . "/" . $winners[0]->id, 'method' => 'PATCH'])!!}
+	{!! Form::model($winners,['url' => '/backstage/' . $tag . "/" . $winners->id, 'method' => 'PATCH'])!!}
 
 		<table class="table table-striped">
 			<thead>
@@ -234,7 +278,7 @@
 					<td>
 						<div class="form-group">
 							@if(!empty($prizes_name))
-							{!! Form::select('prize_ID',array('-1'=>'無',$prizes_name),$winners[0]->prize_ID,array('class'=>'form-control')) !!}
+							{!! Form::select('prize_id',$prizes_name,$nowprize,array('class'=>'form-control')) !!}
 							{!! Form::close() !!}
 
 							@else

@@ -37,6 +37,18 @@ Route::get('backstage/{index}/insert', 'BackstageController@insert');
 
 Route::patch('backstage/{index}', 'BackstageController@create');
 
+Route::get('backstage/{index}/{code}/{index2}', 'BackstageController@showdeep');
+
+Route::get('backstage/{index}/{code}/{index2}/{code2}/edit', 'BackstageController@editdeep');
+
+Route::patch('backstage/{index}/{code}/{index2}/{code2}', 'BackstageController@updatedeep');
+
+Route::patch('backstage/{index}/{code}/{index2}/{code2}/delete', 'BackstageController@deletedeep');
+
+Route::get('backstage/{index}/{code}/{index2}/insert', 'BackstageController@insertdeep');
+
+Route::patch('backstage/{index}/{code}/{index2}', 'BackstageController@createdeep');
+
 Route::controllers([
 	'auth' => 'Auth\AuthController',
 	'password' => 'Auth\PasswordController',

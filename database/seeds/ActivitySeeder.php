@@ -11,8 +11,8 @@ class ActivitySeeder extends Seeder {
 
     Activity::create([
       
-      'name' => '第一次抽獎活動',
-      'status' => '1'
+      'activity_name' => '第一次抽獎活動',
+      'activity_status' => '1'
 
       ]);
 

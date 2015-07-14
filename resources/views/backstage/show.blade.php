@@ -26,9 +26,9 @@
 				    @if(!empty($activities))
 						@foreach($activities as $index => $activity)
 							<tr>
-								<td>{{ $activity->name }}</td>
+								<td>{{ $activity->activity_name }}</td>
 								<td>{{ $activity->created_at }}</td>
-								<td>@if($activity->status == '0')
+								<td>@if($activity->activity_status == '0')
 										關閉
 									@else
 										開啟
@@ -49,6 +49,52 @@
 			</table>
 
 		@elseif($tag  == 'award')
+
+			<a href="/backstage/{{$tag}}/insert" class="btn btn-primary" role="button">新增</a>
+
+			<table class="table table-striped">
+				<thead>
+			      	<tr>
+				        <th>所屬活動</th>
+				        <th>獎項名稱</th>
+				        <th>狀態</th>
+				        <th></th>
+			      	</tr>
+			   	</thead>
+		   		
+		   		<tbody>
+				    @if(!empty($awards))
+						@foreach($awards as $index => $award)
+							<tr>
+								<td>{{ $award->activity_name }}</td>
+								<td>{{ $award->award_name }}</td>
+
+								<td>@if($award->award_status == '0')
+										關閉
+									@else
+										開啟
+									@endif</td>
+								<td>
+								{!! Form::model($awards,['url' => '/backstage/' . $tag . "/" . $award->id . "/delete", 'method' => 'PATCH'])!!}
+
+								<a href="/backstage/{{$tag}}/{{ $award->id }}/edit" class="btn btn-primary" role="button">編輯</a>
+
+								{!! Form::submit('刪除',['class'=>'btn btn-primary']) !!}
+
+								<a href="/backstage/{{$tag}}/{{ $award->id }}/prize" class="btn btn-primary" role="button">獎品內容</a>
+
+								{!! Form::close() !!}								
+								</td>
+							</tr>
+					 	@endforeach
+					@endif
+				</tbody>
+			</table>
+
+		@elseif($tag  == 'prize')
+			
+			<a href="/backstage/{{$pretag}}/{{$precode}}/{{$tag}}/insert" class="btn btn-primary" role="button">新增</a>
+
 			<table class="table table-striped">
 				<thead>
 			      	<tr>
@@ -66,24 +112,24 @@
 				    @if(!empty($prizes))
 						@foreach($prizes as $index => $prize)
 							<tr>
-								<td>{{ $activities[$prize->activity_ID-1]->name }}</td>
-								<td>{{ $prize->type }}</td>
-								<td>{{ $prize->name }}</td>
+								<td>{{$prize->activity_name}}</td>
+								<td>{{ $prize->award_name }}</td>
+								<td>{{ $prize->prize_name }}</td>
 								<td>
-									@if($prize->level == '0')
+									@if($prize->prize_level == '0')
 										一般
 									@else
 										特殊
 									@endif
 								</td>
-								<td>{{ $prize->amount }}</td>
-								<td>@if($prize->status == '0')
+								<td>{{ $prize->prize_amount }}</td>
+								<td>@if($prize->prize_status == '0')
 										關閉
 									@else
 										開啟
 									@endif</td>
 								<td>
-								{!! Form::model($activities,['url' => '/backstage/' . $tag . "/" . $prize->id . "/delete", 'method' => 'PATCH'])!!}
+								{!! Form::model($prize,['url' => '/backstage/' . $pretag . "/" . $prize->award_id . "/" . $tag . "/" . $prize->id . "/delete", 'method' => 'PATCH'])!!}
 
 								<a href="/backstage/{{$tag}}/{{ $prize->id }}/edit" class="btn btn-primary" role="button">編輯</a>
 
@@ -98,6 +144,9 @@
 			</table>
 
 		@elseif($tag  == 'staff')
+			
+			<a href="/backstage/{{$tag}}/insert" class="btn btn-primary" role="button">新增</a>
+
 			<table class="table table-striped">
 				<thead>
 			      	<tr>
@@ -115,25 +164,25 @@
 				    @if(!empty($staffs))
 						@foreach($staffs as $index => $staff)
 							<tr>
-								<td>{{ $activities[$staff->activity_ID-1]->name }}</td>
-								<td>{{ $staff->staff_ID }}</td>
-								<td>{{ $staff->activity_number }}</td>
-								<td>{{ $staff->name }}</td>
+								<td>{{ $staff->activity_name }}</td>
+								<td>{{ $staff->staff_number }}</td>
+								<td>{{ $staff->staff_activity_number }}</td>
+								<td>{{ $staff->staff_name }}</td>
 								<td>
-									@if($staff->level == '0')
+									@if($staff->staff_level == '0')
 										一般
 									@else
 										特殊
 									@endif
 								</td>
-								<td>@if($staff->status == '0')
+								<td>@if($staff->staff_status == '0')
 										未參與
 									@else
 										參與
 									@endif
 								</td>
 								
-								{!! Form::model($activities,['url' => '/backstage/' . $tag . "/" . $staff->id . "/delete", 'method' => 'PATCH'])!!}
+								{!! Form::model($staffs,['url' => '/backstage/' . $tag . "/" . $staff->id . "/delete", 'method' => 'PATCH'])!!}
 
 								<td><a href="/backstage/{{$tag}}/{{ $staff->id }}/edit" class="btn btn-primary" role="button">編輯</a>
 
@@ -164,23 +213,11 @@
 				    @if(!empty($winners))
 						@foreach($winners as $index => $winner)
 							<tr>
-								<td>
-								@foreach($activities as $index => $activity)
-									@if($activity->id == $winner->activity_ID)
-									{{ $activity->name }}
-								@endif
-								@endforeach
-								</td>
-								<td>{{ $winner->staff_ID }}</td>
-								<td>{{ $winner->activity_number }}</td>
-								<td>{{ $winner->name }}</td>
-								<td>
-								@foreach($prizes as $index => $prize)
-									@if($prize->id == $winner->prize_ID)
-									{{ $prize->name }}
-								@endif
-								@endforeach
-								</td>
+								<td>{{ $winner->activity_name}}</td>
+								<td>{{ $winner->staff_number }}</td>
+								<td>{{ $winner->staff_activity_number }}</td>
+								<td>{{ $winner->staff_name }}</td>
+								<td>{{ $winner->prize_name }}</td>
 								<td><a href="/backstage/{{$tag}}/{{ $winner->id }}/edit" class="btn btn-primary" role="button">編輯</a></td>
 							</tr>
 					 	@endforeach

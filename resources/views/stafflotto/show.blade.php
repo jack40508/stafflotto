@@ -17,20 +17,16 @@
 		    <caption>
 			    <div class="row">
 				    <div class="col-md-4">
-					    @foreach($nowprizes as $index => $nowprize)
-							<h2>{!!$nowprize->name!!}</h2>
-						@endforeach
+						<h2>{!!$prize_now->prize_name!!}</h2>
 					</div>
 					
 					<div class="col-md-4">
 					</div>
 					
 					<div class="col-md-4">
-						@foreach($nowprizes as $index => $nowprize)
-							{!! Form::model($nowprize,['url' => '/stafflotto/' . $nowprize->id , 'method' => 'PATCH'])!!}
-							  	{!! Form::submit('開始抽獎',['class'=>'btn btn-primary']) !!}
-							{!! Form::close() !!}
-						@endforeach
+						{!! Form::model($prize_now,['url' => '/stafflotto/' . $prize_now->id , 'method' => 'PATCH'])!!}
+						{!! Form::submit('開始抽獎',['class'=>'btn btn-primary']) !!}
+						{!! Form::close() !!}
 					</div>
 				</div>
 			</caption>
@@ -47,9 +43,9 @@
 			   @if(!empty($winners))
 					@foreach($winners as $index => $winner)
 						<tr>
-							<td>{{ $winner->activity_number }}</td>
-							<td>{{ $winner->staff_ID }}</td>
-							<td>{{ $winner->name }}</td>
+							<td>{{ $winner->staff_activity_number }}</td>
+							<td>{{ $winner->staff_number }}</td>
+							<td>{{ $winner->staff_name }}</td>
 						</tr>
 				 	@endforeach
 				@endif

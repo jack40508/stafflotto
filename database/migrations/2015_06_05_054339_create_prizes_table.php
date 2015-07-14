@@ -15,12 +15,11 @@ class CreatePrizesTable extends Migration {
 		Schema::create('prizes', function(Blueprint $table)
 		{
 			$table->increments('id');
-			$table->string('name');
-			$table->string('type');
-			$table->string('activity_ID');
-			$table->boolean('level');
-			$table->integer('amount');
-			$table->boolean('status')->default('1');
+			$table->string('prize_name');
+			$table->string('award_id');
+			$table->boolean('prize_level');
+			$table->integer('prize_amount');
+			$table->boolean('prize_status')->default('1');
 			$table->timestamps();
 		});
 	}

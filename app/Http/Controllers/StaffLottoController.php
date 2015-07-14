@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use App\Staff;
 use App\Prize;
 use App\Activity;
+use App\Award;
 use Illuminate\Support\Facades\Session;
 
 class StaffLottoController extends Controller {
@@ -14,100 +15,79 @@ class StaffLottoController extends Controller {
 	//
 	public function index()
 	{
-		$activities = Activity::where('status',true)->get();
-		$staffs = Staff::where('activity_ID',$activities[0]->id)->get();
-		$prizes = Prize::where('activity_ID',$activities[0]->id)->get();
-		$prizes_type = Prize::where('activity_ID',$activities[0]->id)->distinct()->select('type')->get();		
-
-		return view('stafflotto.index',compact('staffs','prizes','prizes_type'));
-	}
-
-	public function show($prize_ID)
-	{
-		$activities = Activity::where('status',true)->get();
-		$staffs = Staff::where('activity_ID',$activities[0]->id)->get();
-		$prizes = Prize::where('activity_ID',$activities[0]->id)->get();
-		$prizes_type = Prize::where('activity_ID',$activities[0]->id)->distinct()->select('type')->get();
-		$nowprizes = Prize::where('activity_ID',$activities[0]->id)->where('id',$prize_ID)->get();
-		$winners = Staff::where('activity_ID',$activities[0]->id)->where('prize_ID',$prize_ID)->get();
-
-		return view('stafflotto.show',compact('staffs','prizes','prizes_type','nowprizes','winners'));
-	}
-
-	public function update($prize_ID,Staff $candidate)
-	{
-		$activities = Activity::where('status',true)->get();
-		$staffs = Staff::where('activity_ID',$activities[0]->id)->get();
-		$prizes = Prize::where('activity_ID',$activities[0]->id)->get();
-		$prizes_type = Prize::where('activity_ID',$activities[0]->id)->distinct()->select('type')->get();
-		$nowprizes = Prize::where('activity_ID',$activities[0]->id)->where('id',$prize_ID)->get();
-		$winnersnum = Staff::where('activity_ID',$activities[0]->id)->where('prize_ID',$prize_ID)->count();
-
-		
-		if($winnersnum<=0)
+		$activities = Activity::where('activity_status',true)->first();
+		$awards = Award::where('activity_id',$activities->id)->get();
+		$prizes = Award::join('prizes',function($join) use ($activities)
 		{
-			if($nowprizes[0]->level == 0)
+			$join->on('awards.id','=','prizes.award_id')
+				->where('activity_id','=',$activities->id);
+		})->get();
+
+		return view('stafflotto.index',compact('tag','activities','prizes','awards'));
+	}
+
+	public function show($tag)
+	{
+		//index所需data
+		$activities = Activity::where('activity_status',true)->first();
+		$awards = Award::where('activity_id',$activities->id)->get();
+		$prizes = Award::join('prizes',function($join) use ($activities)
+		{
+			$join->on('awards.id','=','prizes.award_id')
+				->where('activity_id','=',$activities->id);
+		})->get();
+		
+		//show所需data
+		$prize_now = Prize::where('id',$tag)->first();
+		$winners = Staff::where('activity_id',$activities->id)->where('prize_id',$tag)->get();
+
+		return view('stafflotto.show',compact('activities','awards','prizes','prize_now','winners'));
+	}
+
+	public function update($tag)
+	{
+		$activities = Activity::where('activity_status',true)->first();
+		$winnersnum = Staff::where('activity_id',$activities->id)->where('prize_id',$tag)->count();
+		$prizes = Prize::where('id',$tag)->first();
+		$quota = $prizes->prize_amount - $winnersnum;
+		
+		if($quota>0)
+		{
+			if($prizes->prize_level == '0')
 			{
-				$candidates = $candidate->where('activity_ID',$activities[0]->id)->where('prize_ID','-1')->get();
-				$candidatesnum = $candidate->where('activity_ID',$activities[0]->id)->where('prize_ID','-1')->count();
+				$candidates = Staff::where('activity_id',$activities->id)->where('prize_id','-1')->get();
+			}
 
-				if($candidatesnum-$nowprizes[0]->amount >= 0)
+			else
+			{
+				$candidates = Staff::where('activity_id',$activities->id)->where('prize_id','-1')->where('staff_level','1')->get();
+			}
+
+			if($candidates->count()>0)
+			{
+				for($j=0; $j<10000; $j++)
 				{
-					for($j = 0; $j<10000; $j++)
-					{
-						$randnum1 = rand (0,($candidatesnum-1));
-						$randnum2 = rand (0,($candidatesnum-1));
+					$randnum1 = rand (0,($candidates->count()-1));
+					$randnum2 = rand (0,($candidates->count()-1));
 
-						$temp =  $candidates[$randnum1];
-						$candidates[$randnum1] = $candidates[$randnum2];
-						$candidates[$randnum2] = $temp;
-					}
-
-					for($i = 0; $i<$nowprizes[0]->amount; $i++)
-					{				
-						$candidates[$i]->prize_ID = $prize_ID;
-						$candidates[$i]->save();				
-					}
+					$temp =  $candidates[$randnum1];
+					$candidates[$randnum1] = $candidates[$randnum2];
+					$candidates[$randnum2] = $temp;
 				}
 
-				else
-				{
-					return '剩餘抽獎人數不足';
+				for($i=0; $i<$quota; $i++)
+				{				
+					$candidates[$i]->prize_id = $prizes->id;
+					$candidates[$i]->save();				
 				}
 			}
 
 			else
 			{
-				$candidates = $candidate->where('activity_ID',$activities[0]->id)->where('prize_ID','-1')->where('level','1')->get();
-				$candidatesnum = $candidate->where('activity_ID',$activities[0]->id)->where('prize_ID','-1')->where('level','1')->count();
-
-				if($candidatesnum-$nowprizes[0]->amount >= 0)
-				{
-					for($j = 0; $j<10000; $j++)
-					{
-						$randnum1 = rand (0,($candidatesnum-1));
-						$randnum2 = rand (0,($candidatesnum-1));
-
-						$temp =  $candidates[$randnum1];
-						$candidates[$randnum1] = $candidates[$randnum2];
-						$candidates[$randnum2] = $temp;
-					}
-
-					for($i = 0; $i<$nowprizes[0]->amount; $i++)
-					{				
-						$candidates[$i]->prize_ID = $prize_ID;
-						$candidates[$i]->save();				
-					}
-				}
-
-				else
-				{
-					return '剩餘抽獎人數不足';
-				}			
+				return '剩餘抽獎人數不足';
 			}
 		}
-
-		
-		return redirect('/stafflotto/' . $prize_ID);			
+	
+		return redirect('/stafflotto/' . $tag);			
 	}
 }

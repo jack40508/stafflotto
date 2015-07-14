@@ -3,7 +3,7 @@
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class CreateActivitiesTable extends Migration {
+class CreateAwardsTable extends Migration {
 
 	/**
 	 * Run the migrations.
@@ -12,11 +12,12 @@ class CreateActivitiesTable extends Migration {
 	 */
 	public function up()
 	{
-		Schema::create('activities', function(Blueprint $table)
+		Schema::create('awards', function(Blueprint $table)
 		{
 			$table->increments('id');
-			$table->string('activity_name');
-			$table->boolean('activity_status')->default('0');
+			$table->string('award_name');
+			$table->string('activity_id');
+			$table->boolean('award_status')->default('1');
 			$table->timestamps();
 		});
 	}
@@ -28,7 +29,7 @@ class CreateActivitiesTable extends Migration {
 	 */
 	public function down()
 	{
-		Schema::drop('activities');
+		Schema::drop('awards');
 	}
 
 }

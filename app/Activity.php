@@ -6,5 +6,5 @@ class Activity extends Model {
 
 	//
 
-	protected $fillable = ['name','status'];
+	protected $fillable = ['activity_name','activity_status'];
 }

@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Staff;
 use App\Prize;
+use App\Award;
 use App\Activity;
 
 class BackstageController extends Controller {
@@ -25,24 +26,56 @@ class BackstageController extends Controller {
 				break;
 
 			case 'award':
-				$activities = Activity::get();
-				$prizes = Prize::orderby('type')->get();
-				return view('backstage.show',compact('tag','activities','prizes'));
+				//$awards = Award::join('activities','awards.activity_id','=','activities.id')->get();
+				$awards = Activity::join('awards','activities.id','=','awards.activity_id')->get();
+				return view('backstage.show',compact('tag','awards'));
 				break;
 
 			case 'staff':
-				$activities = Activity::get();
-				$staffs = Staff::get();
-				return view('backstage.show',compact('tag','activities','staffs'));
+				//$staffs = Staff::join('activities','staff.activity_id','=','activities.activity_id')->get();
+				$staffs = Activity::join('staff','activities.id','=','staff.activity_id')->get();
+				return view('backstage.show',compact('tag','staffs'));
 				break;
 
 			case 'winner':
-				$activities = Activity::get();
-				$prizes = Prize::orderby('type')->get();
-				$winners = Staff::where('prize_ID','!=','-1')->orderby('prize_ID')->get();
-				return view('backstage.show',compact('tag','activities','prizes','winners'));
+
+				$winners = Activity::join('awards','activities.id','=','awards.activity_id')
+									->join('prizes','awards.id','=','prizes.award_id')
+									->join('staff',function($join)
+									{
+										$join->on('prizes.id','=','staff.prize_id')
+											->where('staff.prize_id','!=','-1');
+									})->orderby('prize_id')->get();
+
+				return view('backstage.show',compact('tag','winners'));
 				break;
 			
+			default:
+				return view('backstage.show',compact('tag'));
+				break;
+		}
+	}
+
+	public function showdeep($pretag,$precode,$tag)
+	{
+		switch ($tag) {
+			case 'prize':
+
+				/*$prizes = Prize::join('awards',function($join) use ($code)
+				{
+					$join->on('prizes.award_id','=','awards.award_id')
+						->where('prizes.award_id','=',$code);
+				})->join('activities','awards.activity_id','=','activities.activity_id')->get();*/
+
+				$prizes = Activity::rightjoin('awards','activities.id','=','awards.activity_id')->join('prizes',function($join) use ($precode)
+					{
+						$join->on('awards.id','=','prizes.award_id')
+							->where('prizes.award_id','=',$precode);
+					})->get();
+
+				return view('backstage.show',compact('pretag','tag','precode','prizes'));
+				break;
+
 			default:
 				return view('backstage.show',compact('tag'));
 				break;
@@ -53,51 +86,101 @@ class BackstageController extends Controller {
 	{
 		switch ($tag) {
 			case 'activity':
-				$activities = Activity::where('id',$code)->get();
+				$activities = Activity::where('id',$code)->first();
 				return view('backstage.edit',compact('tag','activities'));
 				break;
 
 			case 'award':
+				$awards = Award::where('id',$code)->first();
 				$activities = Activity::orderby('id')->get();
 
-				for($i=1; $i<=Activity::count(); $i++)
+				for($i=0; $i<Activity::count(); $i++)
 				{
-					$activities_name[$i] = $activities[$i-1]->name;
+					$activities_name[$i] = $activities[$i]->activity_name;
+					if($awards->activity_id == $activities[$i]->id)
+					$nowactivity = $i;
 				}
 
-				$prizes = Prize::where('id',$code)->get();
-				return view('backstage.edit',compact('tag','activities_name','prizes'));
+				return view('backstage.edit',compact('tag','activities_name','nowactivity','awards'));
 				break;
 
 			case 'staff':
 				
+				$staffs = Staff::where('id',$code)->first();
 				$activities = Activity::orderby('id')->get();
 
-				for($i=1; $i<=Activity::count(); $i++)
+				for($i=0; $i<Activity::count(); $i++)
 				{
-					$activities_name[$i] = $activities[$i-1]->name;
+					$activities_name[$i] = $activities[$i]->activity_name;
+					if($staffs->activity_id == $activities[$i]->id)
+					$nowactivity = $i;
 				}
 
-				$staffs = Staff::where('id',$code)->get();
-
-				return view('backstage.edit',compact('tag','activities_name','staffs'));
+				return view('backstage.edit',compact('tag','activities_name','nowactivity','staffs'));
 				break;
 
 				case 'winner':
+				
+				$winners = Staff::where('id',$code)->first();
 
-				$winners = Staff::where('id',$code)->get();
+				$prizes = Award::join('prizes',function($join) use ($winners)
+					{
+						$join->on('awards.id','=','prizes.award_id')
+							->where('activity_id','=',$winners->activity_id);
+					})->orderby('prizes.id')->get();
 
-				$prizes = Prize::where('activity_ID',$winners[0]->activity_ID)->orderby('id')->get();
+				$prizes_name[0] = '取消資格';
 
-				for($i=1; $i<=Prize::where('activity_ID',$winners[0]->activity_ID)->count(); $i++)
+				for($i=1; $i<=$prizes->count(); $i++)
 				{
-					$prizes_name[$i] = $prizes[$i-1]->name;
+					$prizes_name[$i] = $prizes[$i-1]->prize_name;
+					if($prizes[$i-1]->id == $winners->prize_id)
+					{
+						$nowprize = $i;
+					}
 				}
 
-				return view('backstage.edit',compact('tag','prizes_name','winners'));
+				return view('backstage.edit',compact('tag','prizes_name','nowprize','winners'));
 
 				break;
 			
+			default:
+				return view('backstage.edit',compact('tag'));
+				break;
+		}
+	}
+
+	public function editdeep($pretag,$precode,$tag,$code)
+	{
+		switch ($tag) {
+			case 'prize':
+
+				/*$prizes = Prize::join('awards',function($join) use ($code)
+				{
+					$join->on('prizes.award_id','=','awards.id')
+						->where('prizes.id','=',$code);					
+				})->join('activities','awards.activity_id','=','activities.id')->first();*/
+
+				$prizes = Activity::join('awards','activities.id','=','awards.activity_id')->join('prizes',function($join) use ($precode,$code)
+				{
+					$join->on('awards.id','=','prizes.award_id')
+						->where('prizes.id','=',$code);
+				})->first();
+
+				//設定Award清單，並儲存預設值
+				$nowawards = Award::where('id',$precode)->first();
+				$awards = Award::where('activity_id',$nowawards->activity_id)->get();
+
+				for($i=0; $i<Award::where('activity_id',$nowawards->activity_id)->count(); $i++)
+				{
+					$awards_name[$i] = $awards[$i]->award_name;
+					if($awards[$i]->id == $prizes->award_id)
+					$nowaward = $i;
+				}
+
+				return view('backstage.edit',compact('pretag','tag','awards_name','nowaward','prizes'));
+				break;
+
 			default:
 				return view('backstage.edit',compact('tag'));
 				break;
@@ -109,14 +192,15 @@ class BackstageController extends Controller {
 		switch ($tag) {
 			case 'activity':
 				
-				//如果開啟一個活動，關閉原本開啟的活動，且若無其他活動則跳過
-				if($request->get('status') == '1' && Activity::where('status','1')->count() == '1')
+				//如果開啟一個活動，關閉原本開啟的活動，若無其他活動則跳過
+				if($request->get('activity_status') == '1' && Activity::where('activity_status','1')->count() == '1')
 				{
-					$activities = Activity::where('status','1')->first();
+					$activities = Activity::where('activity_status','1')->first();
 
-					$activities->status = '0';
+					$activities->activity_status = '0';
 					$activities->save();
 				}
+
 				$activities = Activity::where('id',$code)->first();
 
 				$activities->fill($request->input())->save();
@@ -126,35 +210,76 @@ class BackstageController extends Controller {
 
 			case 'award':
 
-				$prizes = Prize::where('id',$code)->first();
+				$activities = Activity::orderby('id')->get();
 
-				$prizes->fill($request->input())->save();
+				$awards = Award::where('id',$code)->first();
+
+				$awards->fill($request->input());
+				$awards->activity_id = $activities[$request->activity_id]->id;//找到對應的Activity
+				$awards->save();
 
 				return redirect('/backstage/' . $tag);
 				break;
 
 			case 'staff':
 
+				$activities = Activity::orderby('id')->get();
+
 				$staffs = Staff::where('id',$code)->first();
 
-				$staffs->fill($request->input())->save();
+				$staffs->fill($request->input());
+				$staffs->activity_id = $activities[$request->activity_id]->id;//找到對應的Activity
+				$staffs->save();
 
 				return redirect('/backstage/' . $tag);
 				break;
 
 			case 'winner':
 
-				$winner = Staff::where('id',$code)->first();
+				$winners = Staff::where('id',$code)->first();
 
-				$winner->fill($request->input())->save();
-
-				if($request->get('prize_ID') == '-1')
+				if($request->get('prize_id') == '0')
 				{
-					$winner->status = '0';
-					$winner->save();
+					$winners->staff_status = '0';
+					$winners->prize_id = '-1';
+					$winners->save();
+				}
+
+				else
+				{
+					$prizes = Award::join('prizes',function($join) use ($winners)
+					{
+						$join->on('awards.id','=','prizes.award_id')
+							->where('activity_id','=',$winners->activity_id);
+					})->orderby('prizes.id')->get();
+
+					$winners->prize_id = $prizes[$request->prize_id-1]->id;
+					$winners->save();
 				}
 				
 				return redirect('/backstage/' . $tag);
+				break;
+			
+			default:
+				return redirect('/backstage/' . $tag);
+				break;
+		}
+	}
+
+	public function updatedeep($pretag,$precode,$tag,$code,Request $request)
+	{
+		switch ($tag) {
+			case 'prize':
+
+				$awards = Award::orderby('id')->get();
+
+				$prizes = Prize::where('id',$code)->first();
+
+				$prizes->fill($request->input());
+				$prizes->award_id = $awards[$request->award_id]->id;//找到對應的Activity
+				$prizes->save();
+
+				return redirect('/backstage/' . $pretag . "/" . $precode . "/" . $tag);
 				break;
 			
 			default:
@@ -168,23 +293,23 @@ class BackstageController extends Controller {
 		switch ($tag) {
 			case 'activity':
 				Activity::where('id',$code)->delete();
-				Staff::where('activity_ID',$code)->delete();
-				Prize::where('activity_ID',$code)->delete();
+				Staff::where('activity_id',$code)->delete();
+				Prize::join('awards',function($join) use ($code)
+					{
+						$join->on('prizes.award_id','=','awards.id')
+							->where('awards.activity_id','=',$code);
+					})->delete();
+				Award::where('activity_id',$code)->delete();
 				
 				return redirect('/backstage/' . $tag);
 
 				break;
 
 			case 'award':
-				Prize::where('id',$code)->delete();
+				Award::where('id',$code)->delete();
 				
-				//獎品被刪除，則獲得該獎品的人就被取消獲獎資格
-				$winners = Staff::where('prize_ID',$code)->get();
-
-				foreach ($winners as $index => $winner) {
-					$winner->prize_ID = '-1';
-					$winner->save();
-				}
+				//獎項被刪除，則其獎品內容也一併刪除
+				$prizes = Prize::where('award_id',$code)->delete();
 
 				return redirect('/backstage/' . $tag);
 				break;
@@ -195,6 +320,19 @@ class BackstageController extends Controller {
 				break;
 			
 			default:
+				return redirect('/backstage/' . $tag);
+				break;
+		}
+	}
+
+	public function deletedeep($pretag,$precode,$tag,$code)
+	{
+		switch ($tag) {
+			case 'prize':
+				$prizes = Prize::where('id',$code)->delete();
+				return redirect('/backstage/' . $pretag . "/" . $precode . "/" . $tag);
+				break;
+			default:
 
 				break;
 		}
@@ -202,20 +340,132 @@ class BackstageController extends Controller {
 
 	public function insert($tag)
 	{
-		return view('backstage.insert',compact('tag'));
+		switch ($tag) {
+			case 'activity':
+				return view('backstage.insert',compact('tag'));
+
+				break;
+
+			case 'award':
+				$activities = Activity::orderby('id')->get();
+				for($i=0; $i<Activity::count(); $i++)
+				{
+					$activities_name[$i] = $activities[$i]->activity_name;
+				}
+
+				return view('backstage.insert',compact('tag','activities_name'));
+				
+				break;
+
+			case 'staff':
+				$activities = Activity::orderby('id')->get();
+				for($i=0; $i<Activity::count(); $i++)
+				{
+					$activities_name[$i] = $activities[$i]->activity_name;
+				}
+
+				return view('backstage.insert',compact('tag','activities_name'));
+				
+				break;
+			
+			default:
+
+				break;
+		}
+	}
+
+	public function insertdeep($pretag,$precode,$tag)
+	{
+		switch ($tag) {
+			case 'prize':
+				return view('backstage.insert',compact('pretag','precode','tag'));
+
+				break;
+			
+			default:
+
+				break;
+		}
 	}
 
 	public function create($tag,Request $request)
 	{
-		if($request->get('status') == '1' && Activity::where('status','1')->count() == '1')
-		{
-			$activities = Activity::where('status','1')->first();
+		switch ($tag) {
+			case 'activity':
+				if($request->get('activity_status') == '1' && Activity::where('activity_status','1')->count() == '1')
+				{
+					$activities = Activity::where('activity_status','1')->first();
 
-			$activities->status = '0';
-			$activities->save();
+					$activities->activity_status = '0';
+					$activities->save();
+				}
+
+				Activity::create(array(
+					'activity_name' => $request->get('activity_name'),
+					'activity_status' => $request->get('activity_status')
+					));
+				
+				return redirect('/backstage/' . $tag);
+
+				break;
+
+			case 'award':
+
+				$activities = Activity::orderby('id')->get();
+
+				Award::create(array(
+					'award_name' => $request->get('award_name'),
+					'activity_id' => $activities[$request->activity_id]->id,//找到對應的Activity
+					'award_status' => $request->get('award_status')
+					));
+
+				return redirect('/backstage/' . $tag);
+
+				break;
+
+			case 'staff':
+
+				$activities = Activity::orderby('id')->get();
+
+				Staff::create(array(
+					'staff_name' => $request->get('staff_name'),
+					'staff_number' => $request->get('staff_number'),
+					'staff_activity_number' => $request->get('staff_activity_number'),
+					'staff_level' => $request->get('staff_level'),
+					'activity_id' => $activities[$request->activity_id]->id,//找到對應的Activity
+					'staff_status' => $request->get('staff_status')
+					));
+
+				return redirect('/backstage/' . $tag);
+
+				break;
+			
+			default:
+
+				break;
 		}
+	}
 
-		Activity::create(array('name' => $request->get('name'), 'status' => $request->get('status')));
-		return redirect('/backstage/' . $tag);
+	public function createdeep($pretag,$precode,$tag,Request $request)
+	{
+		switch ($tag) {
+			case 'prize':
+			
+				Prize::create(array(
+					'prize_name' => $request->get('prize_name'),
+					'award_id' => $precode,
+					'prize_level' => $request->get('prize_level'),
+					'prize_amount' => $request->get('prize_amount'),
+					'prize_status' => $request->get('prize_status')
+					));
+
+				return redirect('/backstage/' . $pretag . '/' . $precode . '/' . $tag);
+
+				break;
+			
+			default:
+
+				break;
+		}
 	}
 }
