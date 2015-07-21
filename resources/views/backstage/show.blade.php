@@ -10,7 +10,7 @@
 	<body>
 		@if($tag  == 'activity')
 
-			<a href="/backstage/{{$tag}}/insert" class="btn btn-primary" role="button">新增</a>
+			<a href="/backstage/{{$tag}}/insert" class="btn btn-success" role="button">新增</a>
 
 			<table class="table table-striped">
 				<thead>
@@ -38,7 +38,7 @@
 								{!! Form::model($activities,['url' => '/backstage/' . $tag . "/" . $activity->id . "/delete", 'method' => 'PATCH'])!!}
 
 								<a href="/backstage/{{$tag}}/{{ $activity->id }}/edit" class="btn btn-primary" role="button">編輯</a>
-								{!! Form::submit('刪除',['class'=>'btn btn-primary']) !!}
+								{!! Form::submit('刪除',['class'=>'btn btn-danger']) !!}
 
 								{!! Form::close() !!}
 								</td>
@@ -50,7 +50,7 @@
 
 		@elseif($tag  == 'award')
 
-			<a href="/backstage/{{$tag}}/insert" class="btn btn-primary" role="button">新增</a>
+			<a href="/backstage/{{$tag}}/insert" class="btn btn-success" role="button">新增</a>
 
 			<table class="table table-striped">
 				<thead>
@@ -79,9 +79,9 @@
 
 								<a href="/backstage/{{$tag}}/{{ $award->id }}/edit" class="btn btn-primary" role="button">編輯</a>
 
-								{!! Form::submit('刪除',['class'=>'btn btn-primary']) !!}
+								{!! Form::submit('刪除',['class'=>'btn btn-danger']) !!}
 
-								<a href="/backstage/{{$tag}}/{{ $award->id }}/prize" class="btn btn-primary" role="button">獎品內容</a>
+								<a href="/backstage/{{$tag}}/{{ $award->id }}/prize" class="btn btn-info" role="button">獎品內容</a>
 
 								{!! Form::close() !!}								
 								</td>
@@ -93,7 +93,7 @@
 
 		@elseif($tag  == 'prize')
 			
-			<a href="/backstage/{{$pretag}}/{{$precode}}/{{$tag}}/insert" class="btn btn-primary" role="button">新增</a>
+			<a href="/backstage/{{$pretag}}/{{$precode}}/{{$tag}}/insert" class="btn btn-success" role="button">新增</a>
 
 			<table class="table table-striped">
 				<thead>
@@ -131,9 +131,9 @@
 								<td>
 								{!! Form::model($prize,['url' => '/backstage/' . $pretag . "/" . $prize->award_id . "/" . $tag . "/" . $prize->id . "/delete", 'method' => 'PATCH'])!!}
 
-								<a href="/backstage/{{$tag}}/{{ $prize->id }}/edit" class="btn btn-primary" role="button">編輯</a>
+								<a href="/backstage/{{$pretag}}/{{$precode}}/{{$tag}}/{{ $prize->id }}/edit" class="btn btn-primary" role="button">編輯</a>
 
-								{!! Form::submit('刪除',['class'=>'btn btn-primary']) !!}
+								{!! Form::submit('刪除',['class'=>'btn btn-danger']) !!}
 
 								{!! Form::close() !!}								
 								</td>
@@ -145,7 +145,7 @@
 
 		@elseif($tag  == 'staff')
 			
-			<a href="/backstage/{{$tag}}/insert" class="btn btn-primary" role="button">新增</a>
+			<a href="/backstage/{{$tag}}/insert" class="btn btn-success" role="button">新增</a>
 
 			<table class="table table-striped">
 				<thead>
@@ -156,6 +156,7 @@
 				        <th>員工姓名</th>
 				        <th>員工等級</th>
 				        <th>狀態</th>
+				        <th>備註</th>
 				        <th></th>
 			      	</tr>
 			   	</thead>
@@ -181,12 +182,13 @@
 										參與
 									@endif
 								</td>
+								<td>{{ $staff->staff_remark }}</td>
 								
 								{!! Form::model($staffs,['url' => '/backstage/' . $tag . "/" . $staff->id . "/delete", 'method' => 'PATCH'])!!}
 
 								<td><a href="/backstage/{{$tag}}/{{ $staff->id }}/edit" class="btn btn-primary" role="button">編輯</a>
 
-								{!! Form::submit('刪除',['class'=>'btn btn-primary']) !!}
+								{!! Form::submit('刪除',['class'=>'btn btn-danger']) !!}
 
 								{!! Form::close() !!}				
 								</td>
@@ -205,6 +207,7 @@
 				        <th>活動號碼</th>
 				        <th>員工姓名</th>
 				        <th>獲得獎項</th>
+				        <th>備註</th>
 				        <th></th>
 			      	</tr>
 			   	</thead>
@@ -218,6 +221,7 @@
 								<td>{{ $winner->staff_activity_number }}</td>
 								<td>{{ $winner->staff_name }}</td>
 								<td>{{ $winner->prize_name }}</td>
+								<td>{{ $winner->staff_remark }}</td>
 								<td><a href="/backstage/{{$tag}}/{{ $winner->id }}/edit" class="btn btn-primary" role="button">編輯</a></td>
 							</tr>
 					 	@endforeach

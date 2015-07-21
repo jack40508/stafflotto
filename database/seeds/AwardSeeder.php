@@ -23,6 +23,26 @@ class AwardSeeder extends Seeder {
 
       ]);
 
+    Award::create([
+      
+      'award_name' => '獎項二之一',
+      'activity_id' => '2',
+
+      ]);
+
+    Award::create([
+      
+      'award_name' => '獎項二之二',
+      'activity_id' => '2',
+
+      ]);
+
+    Award::create([
+      
+      'award_name' => '獎項二之三',
+      'activity_id' => '2',
+
+      ]);
   }
 
 }

@@ -16,7 +16,7 @@ class StaffLottoController extends Controller {
 	public function index()
 	{
 		$activities = Activity::where('activity_status',true)->first();
-		$awards = Award::where('activity_id',$activities->id)->get();
+		$awards = Award::where('activity_id',$activities->id)->where('award_status',true)->get();
 		$prizes = Award::join('prizes',function($join) use ($activities)
 		{
 			$join->on('awards.id','=','prizes.award_id')
@@ -30,7 +30,7 @@ class StaffLottoController extends Controller {
 	{
 		//index所需data
 		$activities = Activity::where('activity_status',true)->first();
-		$awards = Award::where('activity_id',$activities->id)->get();
+		$awards = Award::where('activity_id',$activities->id)->where('award_status',true)->get();
 		$prizes = Award::join('prizes',function($join) use ($activities)
 		{
 			$join->on('awards.id','=','prizes.award_id')
@@ -38,29 +38,48 @@ class StaffLottoController extends Controller {
 		})->get();
 		
 		//show所需data
-		$prize_now = Prize::where('id',$tag)->first();
-		$winners = Staff::where('activity_id',$activities->id)->where('prize_id',$tag)->get();
+		$nowprize = Prize::where('id',$tag)->where('prize_status',true)->first();
+		$winners = Staff::where('activity_id',$activities->id)->where('prize_id',$tag)->orderby('id')->get();
 
-		return view('stafflotto.show',compact('activities','awards','prizes','prize_now','winners'));
+		$winnersnum = '';
+		for($i=0; $i<$winners->count(); $i++)
+		{
+			$winnersnum = $winnersnum . $winners[$i]->staff_activity_number . " ";
+		}
+
+		if($nowprize->prize_page == 1)
+		{
+			$nowprize->prize_page = 2;
+			$nowprize->save();
+		}
+
+		else if($nowprize->prize_page == 2)
+		{
+			$nowprize->prize_page = 3;
+			$nowprize->save();
+		}
+
+		
+		return view('stafflotto.show',compact('activities','awards','prizes','nowprize','winners','winnersnum'));
 	}
 
 	public function update($tag)
 	{
 		$activities = Activity::where('activity_status',true)->first();
-		$winnersnum = Staff::where('activity_id',$activities->id)->where('prize_id',$tag)->count();
+		$winnerssum = Staff::where('activity_id',$activities->id)->where('prize_id',$tag)->where('staff_status',true)->count();
 		$prizes = Prize::where('id',$tag)->first();
-		$quota = $prizes->prize_amount - $winnersnum;
+		$quota = $prizes->prize_amount - $winnerssum;
 		
 		if($quota>0)
 		{
 			if($prizes->prize_level == '0')
 			{
-				$candidates = Staff::where('activity_id',$activities->id)->where('prize_id','-1')->get();
+				$candidates = Staff::where('activity_id',$activities->id)->where('prize_id','-1')->where('staff_status',true)->get();
 			}
 
 			else
 			{
-				$candidates = Staff::where('activity_id',$activities->id)->where('prize_id','-1')->where('staff_level','1')->get();
+				$candidates = Staff::where('activity_id',$activities->id)->where('prize_id','-1')->where('staff_level','1')->where('staff_status',true)->get();
 			}
 
 			if($candidates->count()>0)
@@ -78,8 +97,11 @@ class StaffLottoController extends Controller {
 				for($i=0; $i<$quota; $i++)
 				{				
 					$candidates[$i]->prize_id = $prizes->id;
-					$candidates[$i]->save();				
+					$candidates[$i]->save();							
 				}
+
+				$prizes->prize_page = 1;
+				$prizes->save();
 			}
 
 			else

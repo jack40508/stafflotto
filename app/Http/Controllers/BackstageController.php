@@ -192,13 +192,90 @@ class BackstageController extends Controller {
 		switch ($tag) {
 			case 'activity':
 				
-				//如果開啟一個活動，關閉原本開啟的活動，若無其他活動則跳過
-				if($request->get('activity_status') == '1' && Activity::where('activity_status','1')->count() == '1')
+				//如果開啟一個活動，則關閉原本開啟的活動，並將該活動底下所有獎項、獎品關閉
+				//並開啟底下其他已存在之獎項及獎品
+				if($request->get('activity_status') == '1' && Activity::where('activity_status','1')->count() == 1)
 				{
 					$activities = Activity::where('activity_status','1')->first();
 
 					$activities->activity_status = '0';
 					$activities->save();
+
+					$awards = Award::where('activity_id',$activities->id)->get();
+
+					for($i=0; $i<$awards->count(); $i++)
+					{
+						$awards[$i]->award_status = '0';
+						$awards[$i]->save();
+
+						$prizes = Prize::where('award_id',$awards[$i]->id)->get();
+
+						for($j=0; $j<$prizes->count(); $j++)
+						{
+							$prizes[$j]->prize_status = '0';
+							$prizes[$j]->save();
+						}
+					}
+
+					$activities = Activity::where('id',$code)->first();
+
+					$awards = Award::where('activity_id',$activities->id)->get();
+
+					for($i=0; $i<$awards->count(); $i++)
+					{
+						$awards[$i]->award_status = '1';
+						$awards[$i]->save();
+
+						$prizes = Prize::where('award_id',$awards[$i]->id)->get();
+
+						for($j=0; $j<$prizes->count(); $j++)
+						{
+							$prizes[$j]->prize_status = '1';
+							$prizes[$j]->save();
+						}
+					}
+				}
+
+				else if($request->get('activity_status') == '0')
+				{
+					$activities = Activity::where('id',$code)->first();
+
+					$awards = Award::where('activity_id',$activities->id)->get();
+
+					for($i=0; $i<$awards->count(); $i++)
+					{
+						$awards[$i]->award_status = '0';
+						$awards[$i]->save();
+
+						$prizes = Prize::where('award_id',$awards[$i]->id)->get();
+
+						for($j=0; $j<$prizes->count(); $j++)
+						{
+							$prizes[$j]->prize_status = '0';
+							$prizes[$j]->save();
+						}
+					}
+				}
+
+				else if($request->get('activity_status') == '1' && Activity::where('activity_status','1')->count() == 0)
+				{
+					$activities = Activity::where('id',$code)->first();
+
+					$awards = Award::where('activity_id',$activities->id)->get();
+
+					for($i=0; $i<$awards->count(); $i++)
+					{
+						$awards[$i]->award_status = '1';
+						$awards[$i]->save();
+
+						$prizes = Prize::where('award_id',$awards[$i]->id)->get();
+
+						for($j=0; $j<$prizes->count(); $j++)
+						{
+							$prizes[$j]->prize_status = '1';
+							$prizes[$j]->save();
+						}
+					}
 				}
 
 				$activities = Activity::where('id',$code)->first();
@@ -218,6 +295,14 @@ class BackstageController extends Controller {
 				$awards->activity_id = $activities[$request->activity_id]->id;//找到對應的Activity
 				$awards->save();
 
+				$prizes = Prize::where('award_id',$code)->get();
+
+				for($i=0; $i<$prizes->count(); $i++)
+				{
+					$prizes[$i]->prize_status = $request->award_status;
+					$prizes[$i]->save();
+				}
+
 				return redirect('/backstage/' . $tag);
 				break;
 
@@ -228,6 +313,7 @@ class BackstageController extends Controller {
 				$staffs = Staff::where('id',$code)->first();
 
 				$staffs->fill($request->input());
+				$staffs->staff_remark = $request->get('staff_remark');//問題：不明原因無法以fill新增
 				$staffs->activity_id = $activities[$request->activity_id]->id;//找到對應的Activity
 				$staffs->save();
 
@@ -254,6 +340,7 @@ class BackstageController extends Controller {
 					})->orderby('prizes.id')->get();
 
 					$winners->prize_id = $prizes[$request->prize_id-1]->id;
+					$winners->staff_remark = $request->get('staff_remark');
 					$winners->save();
 				}
 				
@@ -271,7 +358,9 @@ class BackstageController extends Controller {
 		switch ($tag) {
 			case 'prize':
 
-				$awards = Award::orderby('id')->get();
+				$preawrds = Award::where('id',$precode)->first();//找到該獎品屬於哪次活動的事前準備
+
+				$awards = Award::where('activity_id',$preawrds->activity_id)->orderby('id')->get();
 
 				$prizes = Prize::where('id',$code)->first();
 
@@ -398,6 +487,22 @@ class BackstageController extends Controller {
 
 					$activities->activity_status = '0';
 					$activities->save();
+
+					$awards = Award::where('activity_id',$activities->id)->get();
+
+					for($i=0; $i<$awards->count(); $i++)
+					{
+						$awards[$i]->award_status = '0';
+						$awards[$i]->save();
+
+						$prizes = Prize::where('award_id',$awards[$i]->id)->get();
+
+						for($j=0; $j<$prizes->count(); $j++)
+						{
+							$prizes[$j]->prize_status = '0';
+							$prizes[$j]->save();
+						}
+					}
 				}
 
 				Activity::create(array(

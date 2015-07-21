@@ -251,6 +251,16 @@
 						</div>
 					</td>
 				</tr>
+
+				<tr>
+					<td><h4>備註：</h4></td>
+					<td>
+						<div class="form-group">
+							{!! Form::text('staff_remark',$staffs->staff_remark,['class' => 'form-control']) !!}
+							{!! Form::close() !!}
+						</div>
+					</td>
+				</tr>
 				@endif
 			</tbody>
 		</table>
@@ -284,6 +294,16 @@
 							@else
 							該次活動查無獎品
 							@endif
+						</div>
+					</td>
+				</tr>
+
+				<tr>
+					<td><h4>備註：</h4></td>
+					<td>
+						<div class="form-group">
+							{!! Form::text('staff_remark',$winners->staff_remark,['class' => 'form-control']) !!}
+							{!! Form::close() !!}
 						</div>
 					</td>
 				</tr>

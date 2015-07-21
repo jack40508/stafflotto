@@ -16,6 +16,13 @@ class ActivitySeeder extends Seeder {
 
       ]);
 
+    Activity::create([
+      
+      'activity_name' => '第二次抽獎活動',
+      'activity_status' => '0'
+
+      ]);
+
   }
 
 }
