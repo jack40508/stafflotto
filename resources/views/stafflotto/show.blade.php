@@ -121,17 +121,17 @@
 			
 			for(var $i=ss_k; $i<ss_k+1; $i++)
 			{
-				if(ss_i>=50)
+				if(ss_i>=10)
 				ss_elem1.innerHTML = winnersnum_cut[$i];
-				if(ss_i>=100)
+				if(ss_i>=20)
 				ss_elem2.innerHTML = winnersnum_cut[$i+1];
-				if(ss_i>=150)
+				if(ss_i>=30)
 				ss_elem3.innerHTML = winnersnum_cut[$i+2];
-				if(ss_i>=200)
+				if(ss_i>=40)
 				ss_elem4.innerHTML = winnersnum_cut[$i+3];
-				if(ss_i>=250)
+				if(ss_i>=50)
 				ss_elem5.innerHTML = winnersnum_cut[$i+4];
-				if(ss_i>=300)
+				if(ss_i>=60)
 				ss_elem6.innerHTML = winnersnum_cut[$i+5];
 			}
 
@@ -145,7 +145,7 @@
 			ss_elem6.style.opacity = 1;
 			//ss_elemshow1.style.opacity = 1;
 			
-			if(ss_i>300)	
+			if(ss_i>60)	
 			{
 				if(ss_j%2 == 0)
 				{

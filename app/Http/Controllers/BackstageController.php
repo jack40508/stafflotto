@@ -8,10 +8,11 @@ use App\Staff;
 use App\Prize;
 use App\Award;
 use App\Activity;
+use Maatwebsite\Excel\Facades\Excel;
 
 class BackstageController extends Controller {
 
-	//
+
 	public function index()
 	{
 		return view('backstage.index');
@@ -328,6 +329,7 @@ class BackstageController extends Controller {
 				{
 					$winners->staff_status = '0';
 					$winners->prize_id = '-1';
+					$winners->staff_remark = $request->get('staff_remark');
 					$winners->save();
 				}
 
@@ -339,8 +341,8 @@ class BackstageController extends Controller {
 							->where('activity_id','=',$winners->activity_id);
 					})->orderby('prizes.id')->get();
 
-					$winners->prize_id = $prizes[$request->prize_id-1]->id;
 					$winners->staff_remark = $request->get('staff_remark');
+					$winners->prize_id = $prizes[$request->prize_id-1]->id;
 					$winners->save();
 				}
 				
@@ -572,5 +574,98 @@ class BackstageController extends Controller {
 
 				break;
 		}
+	}
+
+	public function excel_import()
+	{
+		Excel::load('uploads/excel/testActivity.xlsx', function($reader) {
+/*		    
+		    //獲取excel的第幾張表
+		    $reader = $reader->getSheet(0);
+		    //獲取表中的數據
+		    $results = $reader->toArray();
+*/
+		    //匯入Activity
+		    $readers = $reader->getSheet(0);
+		    $results = $readers->toArray();
+
+		    Activity::create(array(
+					'activity_name' => $results[1][0],
+					));
+
+		    $activities = Activity::orderby('id','desc')->first();
+
+		    //匯入Award
+		    $readers = $reader->getSheet(1);
+		    $results = $readers->toArray();
+
+		    $i = 1;
+
+		    while(!empty($results[$i][0]))
+		    {
+		    	Award::create(array(
+		    	'award_name' => $results[$i][0],
+		    	'activity_id' => $activities->id,
+		    	));
+
+		    	$i++;
+		    }
+
+		    $awards = Award::where('activity_id',$activities->id)->orderby('id')->get();
+		    
+		    //匯入Prize
+		    $readers = $reader->getSheet(2);
+		    $results = $readers->toArray();
+
+		    $i = 1;
+
+		    while(!empty($results[$i][0]))
+		    {
+		    	for($j=0; $j<$awards->count(); $j++)
+		    	{
+		    		if(!strcmp($results[$i][0],$awards[$j]->award_name))
+					$award_id = $awards[$j]->id;
+		    	}
+		    	
+		    	Prize::create(array(
+					'prize_name' => $results[$i][1],
+					'award_id' => $award_id,
+					'prize_level' => $results[$i][2],
+					'prize_amount' => $results[$i][3],					
+					));
+
+				$i++;
+		    }
+
+		    //匯入Staff
+		    $readers = $reader->getSheet(3);
+		    $results = $readers->toArray();
+
+		    $i = 1;
+
+		    while(!empty($results[$i][0]))
+		    {
+		    	if(!strcmp($results[$i][7], '男'))
+		    	$staff_gender = '男';
+
+		    	else
+		    	$staff_gender = '女';
+
+		    	Staff::create(array(
+					'activity_id' => $activities->id,
+					'staff_activity_number' => $results[$i][0],
+					'staff_number' => $results[$i][1],
+					'staff_name' => $results[$i][2],
+					'staff_cellphone' => $results[$i][3],
+					'staff_e-mail' => $results[$i][4],
+					'staff_department' => $results[$i][5],
+					'staff_seniority' => $results[$i][6],
+      				'staff_gender' => $staff_gender,
+					'staff_level' => $results[$i][8],				
+					));
+
+		    	$i++;
+		    }
+		});
 	}
 }

@@ -18,6 +18,11 @@ class CreateStaffTable extends Migration {
 			$table->string('staff_name');
 			$table->string('staff_number');
 			$table->string('staff_activity_number');
+			$table->string('staff_cellphone');
+			$table->string('staff_e-mail');
+			$table->string('staff_department');
+			$table->string('staff_seniority');
+			$table->boolean('staff_gender');
 			$table->boolean('staff_level');
 			$table->string('activity_id');
 			$table->string('prize_id')->default('-1');

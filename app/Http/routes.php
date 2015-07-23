@@ -29,25 +29,27 @@ Route::get('backstage/{index}', 'BackstageController@show');
 
 Route::get('backstage/{index}/{code}/edit', 'BackstageController@edit');
 
-Route::patch('backstage/{index}/{code}', 'BackstageController@update');
+Route::patch('backstage/{index}/{code}/update', 'BackstageController@update');
 
 Route::patch('backstage/{index}/{code}/delete', 'BackstageController@delete');
 
 Route::get('backstage/{index}/insert', 'BackstageController@insert');
 
-Route::patch('backstage/{index}', 'BackstageController@create');
+Route::patch('backstage/{index}/create', 'BackstageController@create');
 
 Route::get('backstage/{index}/{code}/{index2}', 'BackstageController@showdeep');
 
 Route::get('backstage/{index}/{code}/{index2}/{code2}/edit', 'BackstageController@editdeep');
 
-Route::patch('backstage/{index}/{code}/{index2}/{code2}', 'BackstageController@updatedeep');
+Route::patch('backstage/{index}/{code}/{index2}/{code2}/update', 'BackstageController@updatedeep');
 
 Route::patch('backstage/{index}/{code}/{index2}/{code2}/delete', 'BackstageController@deletedeep');
 
 Route::get('backstage/{index}/{code}/{index2}/insert', 'BackstageController@insertdeep');
 
-Route::patch('backstage/{index}/{code}/{index2}', 'BackstageController@createdeep');
+Route::patch('backstage/{index}/{code}/{index2}/create', 'BackstageController@createdeep');
+
+Route::patch('backstage/excelimport', 'BackstageController@excel_import');
 
 Route::controllers([
 	'auth' => 'Auth\AuthController',

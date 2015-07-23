@@ -41,22 +41,33 @@ class StaffLottoController extends Controller {
 		$nowprize = Prize::where('id',$tag)->where('prize_status',true)->first();
 		$winners = Staff::where('activity_id',$activities->id)->where('prize_id',$tag)->orderby('id')->get();
 
+		if($nowprize->prize_page == 1)//抽獎ING
+		{
+			$nowprize->prize_page = 2;
+			$nowprize->save();
+
+			//抽獎ING時打亂結果，以達到抽獎效果
+			for($j=0; $j<10000; $j++)
+			{
+				$randnum1 = rand (0,($winners->count()-1));
+				$randnum2 = rand (0,($winners->count()-1));
+
+				$temp =  $winners[$randnum1];
+				$winners[$randnum1] = $winners[$randnum2];
+				$winners[$randnum2] = $temp;
+			}
+		}
+
+		else if($nowprize->prize_page == 2)//抽獎完畢，檢視結果
+		{
+			$nowprize->prize_page = 3;
+			$nowprize->save();
+		}
+
 		$winnersnum = '';
 		for($i=0; $i<$winners->count(); $i++)
 		{
 			$winnersnum = $winnersnum . $winners[$i]->staff_activity_number . " ";
-		}
-
-		if($nowprize->prize_page == 1)
-		{
-			$nowprize->prize_page = 2;
-			$nowprize->save();
-		}
-
-		else if($nowprize->prize_page == 2)
-		{
-			$nowprize->prize_page = 3;
-			$nowprize->save();
 		}
 
 		

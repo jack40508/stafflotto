@@ -12,7 +12,7 @@
 <div class="container">
 	
 	@if($tag  == 'activity')
-		{!! Form::model($activities,['url' => '/backstage/' . $tag . "/" . $activities->id, 'method' => 'PATCH'])!!}
+		{!! Form::model($activities,['url' => '/backstage/' . $tag . "/" . $activities->id . '/update', 'method' => 'PATCH'])!!}
 
 		<table class="table table-striped">
 			<thead>
@@ -54,7 +54,7 @@
 
 	@elseif($tag  == 'award')
 
-		{!! Form::model($awards,['url' => '/backstage/' . $tag . "/" . $awards->id, 'method' => 'PATCH'])!!}
+		{!! Form::model($awards,['url' => '/backstage/' . $tag . "/" . $awards->id . '/update', 'method' => 'PATCH'])!!}
 
 		<table class="table table-striped">
 			<thead>
@@ -107,7 +107,7 @@
 
 	@elseif($tag == 'prize')
 
-		{!! Form::model($prizes,['url' => '/backstage/' . $pretag . "/" . $prizes->award_id . "/" . $tag . "/" . $prizes->id, 'method' => 'PATCH'])!!}
+		{!! Form::model($prizes,['url' => '/backstage/' . $pretag . "/" . $prizes->award_id . "/" . $tag . "/" . $prizes->id . '/update', 'method' => 'PATCH'])!!}
 
 		<table class="table table-striped">
 			<thead>
@@ -179,7 +179,7 @@
 
 
 	@elseif($tag  == 'staff')
-		{!! Form::model($staffs,['url' => '/backstage/' . $tag . "/" . $staffs->id, 'method' => 'PATCH'])!!}
+		{!! Form::model($staffs,['url' => '/backstage/' . $tag . "/" . $staffs->id . '/update', 'method' => 'PATCH'])!!}
 
 		<table class="table table-striped">
 			<thead>
@@ -271,7 +271,7 @@
 		{!! Form::close() !!}
 
 	@elseif($tag  == 'winner')
-	{!! Form::model($winners,['url' => '/backstage/' . $tag . "/" . $winners->id, 'method' => 'PATCH'])!!}
+	{!! Form::model($winners,['url' => '/backstage/' . $tag . "/" . $winners->id . '/update', 'method' => 'PATCH'])!!}
 
 		<table class="table table-striped">
 			<thead>

@@ -17,7 +17,7 @@ class CreateAwardsTable extends Migration {
 			$table->increments('id');
 			$table->string('award_name');
 			$table->string('activity_id');
-			$table->boolean('award_status')->default('1');
+			$table->boolean('award_status')->default('0');
 			$table->timestamps();
 		});
 	}

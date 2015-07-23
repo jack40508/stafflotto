@@ -13,6 +13,7 @@ class AwardSeeder extends Seeder {
       
       'award_name' => '獎項一',
       'activity_id' => '1',
+      'award_status' => '1',
 
       ]);
 
@@ -20,6 +21,7 @@ class AwardSeeder extends Seeder {
       
       'award_name' => '獎項二',
       'activity_id' => '1',
+      'award_status' => '1',
 
       ]);
 

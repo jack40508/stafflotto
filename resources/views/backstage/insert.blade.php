@@ -12,7 +12,7 @@
 		
 		@if($tag  == 'activity')
 			
-			{!! Form::model($tag,['url' => '/backstage/' . $tag, 'method' => 'PATCH'])!!}
+			{!! Form::model($tag,['url' => '/backstage/' . $tag . '/create', 'method' => 'PATCH'])!!}
 
 			<table class="table table-striped">
 				<thead>
@@ -52,7 +52,7 @@
 
 		@elseif($tag == 'award')
 
-			{!! Form::model($tag,['url' => '/backstage/' . $tag, 'method' => 'PATCH'])!!}
+			{!! Form::model($tag,['url' => '/backstage/' . $tag . '/create', 'method' => 'PATCH'])!!}
 
 			<table class="table table-striped">
 				<thead>
@@ -103,7 +103,7 @@
 
 		@elseif($tag == 'prize')
 			
-			{!! Form::model($tag,['url' => '/backstage/' . $pretag . "/" . $precode . "/" . $tag, 'method' => 'PATCH'])!!}
+			{!! Form::model($tag,['url' => '/backstage/' . $pretag . "/" . $precode . "/" . $tag . '/create', 'method' => 'PATCH'])!!}
 
 			<table class="table table-striped">
 				<thead>
@@ -163,7 +163,7 @@
 
 		@elseif($tag == 'staff')
 			
-			{!! Form::model($tag,['url' => '/backstage/' . $tag, 'method' => 'PATCH'])!!}
+			{!! Form::model($tag,['url' => '/backstage/' . $tag . '/create', 'method' => 'PATCH'])!!}
 
 			<table class="table table-striped">
 				<thead>

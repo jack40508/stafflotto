@@ -24,6 +24,7 @@ class PrizeSeeder extends Seeder {
       'prize_level' => '0',
       'award_id' => '1',
       'prize_amount' => 5,
+      'prize_status' => '1',
 
       ]);
 
@@ -33,6 +34,7 @@ class PrizeSeeder extends Seeder {
       'prize_level' => '0',
       'award_id' => '1',
       'prize_amount' => 2,
+      'prize_status' => '1',
 
       ]);
 
@@ -42,6 +44,7 @@ class PrizeSeeder extends Seeder {
       'prize_level' => '0',
       'award_id' => '2',
       'prize_amount' => 3,
+      'prize_status' => '1',
 
       ]);
 
@@ -51,6 +54,7 @@ class PrizeSeeder extends Seeder {
       'prize_level' => '1',
       'award_id' => '2',
       'prize_amount' => 1,
+      'prize_status' => '1',
 
       ]);
 
