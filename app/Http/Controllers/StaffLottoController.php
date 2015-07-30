@@ -12,7 +12,6 @@ use Illuminate\Support\Facades\Session;
 
 class StaffLottoController extends Controller {
 
-	//
 	public function index()
 	{
 		$activities = Activity::where('activity_status',true)->first();

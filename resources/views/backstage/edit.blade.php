@@ -1,4 +1,4 @@
-@extends('app')
+@extends('app_backstage')
 @section('content')
 
 
@@ -307,6 +307,57 @@
 						</div>
 					</td>
 				</tr>
+				@endif
+			</tbody>
+		</table>
+
+		{!! Form::submit('確認',['class'=>'btn btn-primary']) !!}
+
+		{!! Form::close() !!}
+
+		@elseif($tag == 'user')
+		{!! Form::model($users,['url' => '/backstage/' . $tag . "/" . $users->id . '/update', 'method' => 'PATCH'])!!}
+
+		<table class="table table-striped">
+			<thead>
+				<tr>
+					<th><h2>編輯</h2></th>
+					<th></th>
+				</tr>
+			</thead>
+			   		
+			<tbody>
+				@if(!empty($users))
+				<tr>
+					<td><h4>管理者姓名：</h4></td>
+					<td>
+						<div class="form-group">
+							{!! Form::text('name',$users->name,['class' => 'form-control']) !!}
+							{!! Form::close() !!}
+						</div>
+					</td>
+				</tr>
+
+				<tr>
+					<td><h4>帳號：</h4></td>
+					<td>
+						<div class="form-group">
+							{!! Form::text('account',$users->account,['class' => 'form-control']) !!}
+							{!! Form::close() !!}
+						</div>
+					</td>
+				</tr>
+
+				<tr>
+					<td><h4>密碼：</h4></td>
+					<td>
+						<div class="form-group">
+							{!! Form::text('password_original',$users->password_original,['class' => 'form-control']) !!}
+							{!! Form::close() !!}
+						</div>
+					</td>
+				</tr>
+
 				@endif
 			</tbody>
 		</table>

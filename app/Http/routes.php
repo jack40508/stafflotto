@@ -49,7 +49,11 @@ Route::get('backstage/{index}/{code}/{index2}/insert', 'BackstageController@inse
 
 Route::patch('backstage/{index}/{code}/{index2}/create', 'BackstageController@createdeep');
 
-Route::patch('backstage/excelimport', 'BackstageController@excel_import');
+Route::post('backstage/excelimport', 'BackstageController@excel_import');
+
+Route::patch('backstage/excelexport', 'BackstageController@excel_export');
+
+Route::post('backstage/imageupload', 'BackstageController@image_upload');
 
 Route::controllers([
 	'auth' => 'Auth\AuthController',

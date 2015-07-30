@@ -138,6 +138,8 @@ return [
 
 		'Illuminate\Html\HtmlServiceProvider',
 		'Maatwebsite\Excel\ExcelServiceProvider',
+		'Intervention\Image\ImageServiceProvider',
+
 
 		/*
 		 * Application Service Providers...
@@ -196,7 +198,8 @@ return [
 		'Validator' => 'Illuminate\Support\Facades\Validator',
 		'View'      => 'Illuminate\Support\Facades\View',
 		'Form'		=> 'Illuminate\Html\FormFacade',
-		'Excel'		=> 'Maatwebsite\Excel\Facades\Excel'
+		'Excel'		=> 'Maatwebsite\Excel\Facades\Excel',
+		'Image'		=> 'Intervention\Image\Facades\Image'
 	],
 
 ];

@@ -29,7 +29,23 @@
 					<span class="icon-bar"></span>
 					<span class="icon-bar"></span>
 				</button>
-				<a class="navbar-brand" href="{{ url('/stafflotto') }}">亞洲廣播股份有限公司</a>
+				<a class="navbar-brand" href="{{ url('/backstage') }}">亞洲廣播股份有限公司 後台管理</a>
+			</div>
+
+			<div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+
+				<ul class="nav navbar-nav navbar-right">
+					@if (Auth::guest())
+						<li><a href="{{ url('/auth/login') }}">登入</a></li>
+					@else
+						<li class="dropdown">
+							<a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">{{ Auth::user()->name }} <span class="caret"></span></a>
+							<ul class="dropdown-menu" role="menu">
+								<li><a href="{{ url('/auth/logout') }}">登出</a></li>
+							</ul>
+						</li>
+					@endif
+				</ul>
 			</div>
 		</div>
 	</nav>

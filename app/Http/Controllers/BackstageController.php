@@ -4,14 +4,22 @@ use App\Http\Requests;
 use App\Http\Controllers\Controller;
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Input;
 use App\Staff;
 use App\Prize;
 use App\Award;
 use App\Activity;
+use App\User;
 use Maatwebsite\Excel\Facades\Excel;
+use Hash;
+use Response;
 
 class BackstageController extends Controller {
 
+	public function __construct()
+	{
+		$this->middleware('auth');
+	}
 
 	public function index()
 	{
@@ -49,6 +57,23 @@ class BackstageController extends Controller {
 									})->orderby('prize_id')->get();
 
 				return view('backstage.show',compact('tag','winners'));
+				break;
+
+			case 'user':
+
+				$users = User::orderby('id')->first();
+
+				return view('backstage.show',compact('tag','users'));
+				break;
+
+			case 'excel':
+
+				$activities = Activity::orderby('id')->get();
+
+				for($i=0; $i<$activities->count(); $i++)
+				$activities_name[$i] = $activities[$i]->activity_name;
+
+				return view('backstage.show',compact('tag','users','activities_name'));
 				break;
 			
 			default:
@@ -142,6 +167,13 @@ class BackstageController extends Controller {
 				}
 
 				return view('backstage.edit',compact('tag','prizes_name','nowprize','winners'));
+
+				break;
+
+				case 'user':
+
+				$users = User::orderby('id')->first();
+				return view('backstage.edit',compact('tag','users'));
 
 				break;
 			
@@ -314,7 +346,6 @@ class BackstageController extends Controller {
 				$staffs = Staff::where('id',$code)->first();
 
 				$staffs->fill($request->input());
-				$staffs->staff_remark = $request->get('staff_remark');//問題：不明原因無法以fill新增
 				$staffs->activity_id = $activities[$request->activity_id]->id;//找到對應的Activity
 				$staffs->save();
 
@@ -349,6 +380,17 @@ class BackstageController extends Controller {
 				return redirect('/backstage/' . $tag);
 				break;
 			
+				case 'user':
+				
+				$users = User::where('id',$code)->first();
+
+				$users->fill($request->input());
+				$users->password = Hash::make($request->get('password_original'));
+				$users->save();
+
+				return redirect('/backstage/' . $tag);	
+				break;
+
 			default:
 				return redirect('/backstage/' . $tag);
 				break;
@@ -576,15 +618,15 @@ class BackstageController extends Controller {
 		}
 	}
 
-	public function excel_import()
+	public function excel_import(Request $request)
 	{
-		Excel::load('uploads/excel/testActivity.xlsx', function($reader) {
-/*		    
+		Excel::load(Input::file('excel_filepath')->getRealPath(), function($reader) {
+		    /*
 		    //獲取excel的第幾張表
 		    $reader = $reader->getSheet(0);
 		    //獲取表中的數據
 		    $results = $reader->toArray();
-*/
+			*/
 		    //匯入Activity
 		    $readers = $reader->getSheet(0);
 		    $results = $readers->toArray();
@@ -646,10 +688,10 @@ class BackstageController extends Controller {
 		    while(!empty($results[$i][0]))
 		    {
 		    	if(!strcmp($results[$i][7], '男'))
-		    	$staff_gender = '男';
+		    	$staff_gender = 1;
 
 		    	else
-		    	$staff_gender = '女';
+		    	$staff_gender = 0;
 
 		    	Staff::create(array(
 					'activity_id' => $activities->id,
@@ -657,7 +699,7 @@ class BackstageController extends Controller {
 					'staff_number' => $results[$i][1],
 					'staff_name' => $results[$i][2],
 					'staff_cellphone' => $results[$i][3],
-					'staff_e-mail' => $results[$i][4],
+					'staff_email' => $results[$i][4],
 					'staff_department' => $results[$i][5],
 					'staff_seniority' => $results[$i][6],
       				'staff_gender' => $staff_gender,
@@ -667,5 +709,75 @@ class BackstageController extends Controller {
 		    	$i++;
 		    }
 		});
+
+		return redirect('/backstage/excel');
+	}
+
+	public function excel_export(Request $request)
+	{
+		$activities = Activity::get();
+
+		$nowactivity = $activities[$request->activity_id];
+
+		$staffs = Staff::where('activity_id',$nowactivity->id)->get();
+
+		$winners = Activity::join('awards','activities.id','=','awards.activity_id')
+							->join('prizes','awards.id','=','prizes.award_id')
+							->join('staff',function($join)
+							{
+								$join->on('prizes.id','=','staff.prize_id')
+									->where('staff.prize_id','!=','-1');
+							})->orderby('prize_id')->get();
+
+		Excel::create($nowactivity->activity_name, function($excel) use ($staffs,$winners) {
+    		$excel->sheet('員工資訊', function($sheet) use ($staffs) {
+        		$data = [];
+    			array_push($data, ['抽獎號碼','抽獎工號','姓名','手機','EMail','部門','年資','性別','特別資格','備註']);
+
+    			foreach ($staffs as $index => $staff) {
+
+    				if($staff->staff_gender == 1)
+		    		$staff_gender = '男';
+
+		    		else
+		    		$staff_gender = '女';
+
+    				array_push($data, [$staff->staff_activity_number,$staff->staff_number,$staff->staff_name,$staff->staff_cellphone,$staff->staff_email,$staff->staff_department,$staff->staff_seniority,$staff_gender,$staff->staff_level,$staff->staff_remark]);
+    			}
+
+    			$sheet->fromArray($data,null,null,false,false);		
+    		});
+
+    		$excel->sheet('得獎人資訊', function($sheet) use ($winners) {
+        		$data = [];
+    			array_push($data, ['獎項','獎品','抽獎號碼','抽獎工號','姓名','手機']);
+
+    			foreach ($winners as $index => $winner) {
+    				array_push($data, [$winner->award_name,$winner->prize_name,$winner->staff_activity_number,$winner->staff_number,$winner->staff_name,$winner->staff_cellphone]);
+    			}
+
+        		$sheet->fromArray($data,null,null,false,false);
+        	});
+		})->export('xls');
+
+		return redirect('/backstage/excel');
+	}
+
+	public function image_upload(Request $request)
+	{
+		$file = Input::file('image_filepath');
+		$destinationPath = 'uploads/image';
+		// If the uploads fail due to file system, you can try doing public_path().'/uploads' 
+		//$filename = $file->getClientOriginalName();
+		$extension = $file->getClientOriginalExtension();
+		$filename = str_random(12) . '.' . $extension;
+
+		if($extension == 'jpg' || $extension == 'bmp' || $extension == 'png' || $extension == 'JPG' || $extension == 'BMP' || $extension == 'PNG')
+		$upload_success = Input::file('image_filepath')->move($destinationPath, $filename, $extension);
+
+		else
+		return '僅能上傳圖檔(jpg、bmp、png)';
+
+		return redirect('/backstage/image');
 	}
 }

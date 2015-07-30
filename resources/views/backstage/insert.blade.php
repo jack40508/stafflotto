@@ -1,4 +1,4 @@
-@extends('app')
+@extends('app_backstage')
 @section('content')
 
 <!DOCTYPE html>

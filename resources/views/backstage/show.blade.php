@@ -12,10 +12,6 @@
 
 			<a href="/backstage/{{$tag}}/insert" class="btn btn-success" role="button">新增</a>
 			
-			{!! Form::model($tag,['url' => '/backstage/excelimport', 'method' => 'PATCH'])!!}
-			{!! Form::submit('匯入Excel',['class'=>'btn btn-primary']) !!}
-			{!! Form::close() !!}
-			
 			<table class="table table-striped">
 				<thead>
 			      	<tr>
@@ -239,6 +235,76 @@
 					@endif
 				</tbody>
 			</table>
+
+			@elseif($tag  == 'user')
+
+			<table class="table table-striped">
+				<thead>
+			      	<tr>
+				        <th>名稱</th>
+				        <th>帳號</th>
+				        <th>密碼</th>
+				        <th></th>
+			      	</tr>
+			   	</thead>
+		   		
+		   		<tbody>
+				    @if(!empty($users))
+						<tr>
+							<td>{{ $users->name }}</td>
+							<td>{{ $users->account }}</td>
+							<td>{{ $users->password_original }}</td>
+							<td>
+							<center><a href="/backstage/{{$tag}}/{{ $users->id }}/edit" class="btn btn-primary" role="button">編輯</a></center>
+							</td>
+						</tr>
+
+					@endif
+				</tbody>
+			</table>
+
+		@elseif($tag == 'excel')
+		{!! Form::model($tag,['url' => '/backstage/excelimport', 'method' => 'POST','files' => true])!!}
+		<div class="row">
+		<h3>選擇檔案：</h3>
+
+			<div class="col-md-5">
+				{!! Form::file('excel_filepath',[]) !!}
+			</div>
+			<div class="col-md-2">
+				{!! Form::submit('匯入Excel',['class'=>'btn btn-primary']) !!}
+			</div>
+		</div>
+		{!! Form::close() !!}
+
+		{!! Form::model($tag,['url' => '/backstage/excelexport', 'method' => 'PATCH'])!!}
+		<div class="row">
+		<h3>選擇活動：</h3>
+
+		<div class="row">
+			<div class="col-md-5">
+				{!! Form::select('activity_id',$activities_name,0,array('class'=>'form-control')) !!}
+			</div>
+			<div class="col-md-2">
+				{!! Form::submit('匯出Excel',['class'=>'btn btn-primary']) !!}
+			</div>
+		</div>
+		{!! Form::close() !!}
+
+		@elseif($tag == 'image')
+		{!! Form::model($tag,['url' => '/backstage/imageupload', 'method' => 'POST', 'files' => true])!!}
+		<div class="row">
+		<h3>選擇檔案：</h3>
+
+			<div class="col-md-5">
+				{!! Form::file('image_filepath',[]) !!}
+			</div>
+			<div class="col-md-2">
+				{!! Form::submit('上傳圖片',['class'=>'btn btn-primary']) !!}
+			</div>
+		</div>
+		{!! Form::close() !!}
+
 		@endif
 	</body>
 	</html>
