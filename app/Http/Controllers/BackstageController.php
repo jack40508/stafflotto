@@ -10,9 +10,11 @@ use App\Prize;
 use App\Award;
 use App\Activity;
 use App\User;
+use App\Picture;
 use Maatwebsite\Excel\Facades\Excel;
 use Hash;
 use Response;
+use Session;
 
 class BackstageController extends Controller {
 
@@ -50,7 +52,7 @@ class BackstageController extends Controller {
 
 				$winners = Activity::join('awards','activities.id','=','awards.activity_id')
 									->join('prizes','awards.id','=','prizes.award_id')
-									->join('staff',function($join)
+									->join('staff', function($join)
 									{
 										$join->on('prizes.id','=','staff.prize_id')
 											->where('staff.prize_id','!=','-1');
@@ -74,6 +76,13 @@ class BackstageController extends Controller {
 				$activities_name[$i] = $activities[$i]->activity_name;
 
 				return view('backstage.show',compact('tag','users','activities_name'));
+				break;
+
+			case 'image':		
+				
+				$pictures = Activity::rightjoin('pictures','activities.id','=','pictures.usingfor')->orderby('pictures.id')->get();
+
+				return view('backstage.show',compact('tag','pictures'));
 				break;
 			
 			default:
@@ -176,6 +185,31 @@ class BackstageController extends Controller {
 				return view('backstage.edit',compact('tag','users'));
 
 				break;
+
+				case 'image':
+
+				$pictures = Picture::where('pictures.id','=',$code)->first();
+
+				$activities = Activity::orderby('id')->get();
+				
+				$activities_name[0] = '未使用';
+				$activities_name[1] = '背景';
+
+				if($pictures->usingfor == -1)
+				$nowactivity = 0;
+				else if($pictures->usingfor == 0)
+				$nowactivity = 1;
+				
+				for($i=2; $i<Activity::count()+2; $i++)
+				{
+					$activities_name[$i] = $activities[$i-2]->activity_name;
+					if($pictures->usingfor == $activities[$i-2]->id)
+					$nowactivity = $i;
+				}
+
+				return view('backstage.edit',compact('tag','pictures','activities_name','nowactivity'));
+
+				break;
 			
 			default:
 				return view('backstage.edit',compact('tag'));
@@ -222,6 +256,9 @@ class BackstageController extends Controller {
 
 	public function update($tag,$code,Request $request)
 	{
+		Session::flash('flash_message', '更新失敗！請重新嘗試');
+		Session::flash('flash_type', 'alert-danger');
+
 		switch ($tag) {
 			case 'activity':
 				
@@ -314,6 +351,9 @@ class BackstageController extends Controller {
 				$activities = Activity::where('id',$code)->first();
 
 				$activities->fill($request->input())->save();
+
+				Session::flash('flash_message', '更新活動－'.$activities->activity_name.'成功！');
+				Session::flash('flash_type', 'alert-success');
 				
 				return redirect('/backstage/' . $tag);
 				break;
@@ -336,6 +376,9 @@ class BackstageController extends Controller {
 					$prizes[$i]->save();
 				}
 
+				Session::flash('flash_message', '更新獎項－'.$awards->award_name.'成功！');
+				Session::flash('flash_type', 'alert-success');
+
 				return redirect('/backstage/' . $tag);
 				break;
 
@@ -348,6 +391,9 @@ class BackstageController extends Controller {
 				$staffs->fill($request->input());
 				$staffs->activity_id = $activities[$request->activity_id]->id;//找到對應的Activity
 				$staffs->save();
+
+				Session::flash('flash_message', '更新員工－'.$staffs->staff_name.'成功！');
+				Session::flash('flash_type', 'alert-success');
 
 				return redirect('/backstage/' . $tag);
 				break;
@@ -376,11 +422,14 @@ class BackstageController extends Controller {
 					$winners->prize_id = $prizes[$request->prize_id-1]->id;
 					$winners->save();
 				}
+
+				Session::flash('flash_message', '更新得獎人－'.$winners->staff_name.'成功！');
+				Session::flash('flash_type', 'alert-success');
 				
 				return redirect('/backstage/' . $tag);
 				break;
 			
-				case 'user':
+			case 'user':
 				
 				$users = User::where('id',$code)->first();
 
@@ -388,9 +437,52 @@ class BackstageController extends Controller {
 				$users->password = Hash::make($request->get('password_original'));
 				$users->save();
 
+				Session::flash('flash_message', '更新使用者－'.$users->name.'成功！');
+				Session::flash('flash_type', 'alert-success');
+
 				return redirect('/backstage/' . $tag);	
 				break;
 
+			case 'image':
+
+				$pictures = Picture::where('pictures.id','=',$code)->first();
+
+				$activities = Activity::orderby('id')->get();
+				
+				if($request->usingfor == '0')	//設定為未使用
+				$pictures->usingfor = '-1';
+
+				else if($request->usingfor == '1')	//設定為背景
+				{
+					$background = Picture::where('usingfor','0')->first();
+					if(!empty($background) && $background->id != $pictures->id)
+					{
+						$background->usingfor = '-1';
+						$background->save();
+					}
+					$pictures->usingfor = '0';
+				}
+
+				else
+				{
+					$prepicture = Picture::where('usingfor',$activities[$request->usingfor-2]->id)->first();
+					if(!empty($prepicture) && $prepicture->id != $pictures->id)
+					{
+						$prepicture->usingfor = '-1';
+						$prepicture->save();
+					}
+					$pictures->usingfor = $activities[$request->usingfor-2]->id;
+				}
+
+				$pictures->picture_originalname = $request->picture_originalname;
+				
+				$pictures->save();
+
+				Session::flash('flash_message', '更新圖片－'.$pictures->picture_originalname.'成功！');
+				Session::flash('flash_type', 'alert-success');
+
+				return redirect('/backstage/' . $tag);
+				break;
 			default:
 				return redirect('/backstage/' . $tag);
 				break;
@@ -399,6 +491,9 @@ class BackstageController extends Controller {
 
 	public function updatedeep($pretag,$precode,$tag,$code,Request $request)
 	{
+		Session::flash('flash_message', '更新失敗！請重新嘗試');
+		Session::flash('flash_type', 'alert-danger');
+
 		switch ($tag) {
 			case 'prize':
 
@@ -412,6 +507,9 @@ class BackstageController extends Controller {
 				$prizes->award_id = $awards[$request->award_id]->id;//找到對應的Activity
 				$prizes->save();
 
+				Session::flash('flash_message', '更新獎品－'.$prizes->prize_name.'成功！');
+				Session::flash('flash_type', 'alert-success');
+
 				return redirect('/backstage/' . $pretag . "/" . $precode . "/" . $tag);
 				break;
 			
@@ -421,54 +519,86 @@ class BackstageController extends Controller {
 		}
 	}
 
-	public function delete($tag,$code)
+	public function delete($tag,$code,Request $request)
 	{
+		Session::flash('flash_message', '刪除失敗！請重新嘗試');
+		Session::flash('flash_type', 'alert-danger');
+
 		switch ($tag) {
 			case 'activity':
-				Activity::where('id',$code)->delete();
-				Staff::where('activity_id',$code)->delete();
-				Prize::join('awards',function($join) use ($code)
-					{
-						$join->on('prizes.award_id','=','awards.id')
-							->where('awards.activity_id','=',$code);
-					})->delete();
-				Award::where('activity_id',$code)->delete();
-				
-				return redirect('/backstage/' . $tag);
+				$prouser = User::where('id',2)->first();
+				if($request->prouser_password == $prouser->password_original)
+				{
+					$activities = Activity::where('id',$code)->first();
+					Activity::where('id',$code)->delete();
+					Staff::where('activity_id',$code)->delete();
+					Prize::join('awards',function($join) use ($code)
+						{
+							$join->on('prizes.award_id','=','awards.id')
+								->where('awards.activity_id','=',$code);
+						})->delete();
+					Award::where('activity_id',$code)->delete();
+					
+					Session::flash('flash_message', '刪除活動－'.$activities->activity_name.'成功！');
+					Session::flash('flash_type', 'alert-success');
+				}
+
+				else
+				{
+					Session::flash('flash_message', '密碼不正確，無法刪除');
+					Session::flash('flash_type', 'alert-danger');
+				}
 
 				break;
 
 			case 'award':
+				$awards = Award::where('id',$code)->first();
 				Award::where('id',$code)->delete();
 				
 				//獎項被刪除，則其獎品內容也一併刪除
 				$prizes = Prize::where('award_id',$code)->delete();
 
-				return redirect('/backstage/' . $tag);
+				Session::flash('flash_message', '刪除獎項－'.$awards->award_name.'成功！');
+				Session::flash('flash_type', 'alert-success');
+
 				break;
 
 			case 'staff':
+				$staffs = Staff::where('id',$code)->first();
 				Staff::where('id',$code)->delete();
-				return redirect('/backstage/' . $tag);
+
+				Session::flash('flash_message', '刪除員工－'.$staffs->staff_name.'成功！');
+				Session::flash('flash_type', 'alert-success');
+
 				break;
 			
 			default:
-				return redirect('/backstage/' . $tag);
+				
 				break;
 		}
+
+		return redirect('/backstage/' . $tag);
 	}
 
 	public function deletedeep($pretag,$precode,$tag,$code)
 	{
+		Session::flash('flash_message', '刪除失敗！請重新嘗試');
+		Session::flash('flash_type', 'alert-danger');
+
 		switch ($tag) {
 			case 'prize':
-				$prizes = Prize::where('id',$code)->delete();
-				return redirect('/backstage/' . $pretag . "/" . $precode . "/" . $tag);
+				$prizes = Prize::where('id',$code)->first();
+				Prize::where('id',$code)->delete();
+
+				Session::flash('flash_message', '刪除獎品－'.$prizes->prize_name.'成功！');
+				Session::flash('flash_type', 'alert-success');
 				break;
 			default:
 
 				break;
 		}
+
+		return redirect('/backstage/' . $pretag . "/" . $precode . "/" . $tag);
 	}
 
 	public function insert($tag)
@@ -523,6 +653,9 @@ class BackstageController extends Controller {
 
 	public function create($tag,Request $request)
 	{
+		Session::flash('flash_message', '新建失敗！請重新嘗試');
+		Session::flash('flash_type', 'alert-danger');
+
 		switch ($tag) {
 			case 'activity':
 				if($request->get('activity_status') == '1' && Activity::where('activity_status','1')->count() == '1')
@@ -553,8 +686,11 @@ class BackstageController extends Controller {
 					'activity_name' => $request->get('activity_name'),
 					'activity_status' => $request->get('activity_status')
 					));
-				
-				return redirect('/backstage/' . $tag);
+
+				$activities = Activity::orderby('id','DESC')->first();
+
+				Session::flash('flash_message', '新建活動－'.$activities->activity_name.'成功！');
+				Session::flash('flash_type', 'alert-success');
 
 				break;
 
@@ -568,7 +704,10 @@ class BackstageController extends Controller {
 					'award_status' => $request->get('award_status')
 					));
 
-				return redirect('/backstage/' . $tag);
+				$awards = Award::orderby('id','DESC')->first();
+
+				Session::flash('flash_message', '新建獎項－'.$awards->award_name.'成功！');
+				Session::flash('flash_type', 'alert-success');
 
 				break;
 
@@ -585,7 +724,10 @@ class BackstageController extends Controller {
 					'staff_status' => $request->get('staff_status')
 					));
 
-				return redirect('/backstage/' . $tag);
+				$staffs = Staff::orderby('id','DESC')->first();
+
+				Session::flash('flash_message', '新建員工－'.$staffs->staff_name.'成功！');
+				Session::flash('flash_type', 'alert-success');
 
 				break;
 			
@@ -593,10 +735,15 @@ class BackstageController extends Controller {
 
 				break;
 		}
+
+		return redirect('/backstage/' . $tag);
 	}
 
 	public function createdeep($pretag,$precode,$tag,Request $request)
 	{
+		Session::flash('flash_message', '更新失敗！請重新嘗試');
+		Session::flash('flash_type', 'alert-danger');
+
 		switch ($tag) {
 			case 'prize':
 			
@@ -608,7 +755,10 @@ class BackstageController extends Controller {
 					'prize_status' => $request->get('prize_status')
 					));
 
-				return redirect('/backstage/' . $pretag . '/' . $precode . '/' . $tag);
+				$prizes = Prize::orderby('id','DESC')->first();
+
+				Session::flash('flash_message', '新建獎品－'.$prizes->prize_name.'成功！');
+				Session::flash('flash_type', 'alert-success');
 
 				break;
 			
@@ -616,101 +766,126 @@ class BackstageController extends Controller {
 
 				break;
 		}
+
+		return redirect('/backstage/' . $pretag . '/' . $precode . '/' . $tag);
+
 	}
 
 	public function excel_import(Request $request)
 	{
-		Excel::load(Input::file('excel_filepath')->getRealPath(), function($reader) {
-		    /*
-		    //獲取excel的第幾張表
-		    $reader = $reader->getSheet(0);
-		    //獲取表中的數據
-		    $results = $reader->toArray();
-			*/
-		    //匯入Activity
-		    $readers = $reader->getSheet(0);
-		    $results = $readers->toArray();
+		Session::flash('flash_message', '匯入失敗，請重新嘗試');
+		Session::flash('flash_type', 'alert-danger');
 
-		    Activity::create(array(
-					'activity_name' => $results[1][0],
-					));
+		if(Input::file('excel_filepath')!=null && (Input::file('excel_filepath')->getClientOriginalExtension() == 'xls' || Input::file('excel_filepath')->getClientOriginalExtension() == 'xlsx'))
+		{
+			Excel::load(Input::file('excel_filepath')->getRealPath(), function($reader) {
+			    /*
+			    //獲取excel的第幾張表
+			    $reader = $reader->getSheet(0);
+			    //獲取表中的數據
+			    $results = $reader->toArray();
+				*/
+			    //匯入Activity
+			    $readers = $reader->getSheet(0);
+			    $results = $readers->toArray();
 
-		    $activities = Activity::orderby('id','desc')->first();
+			    Activity::create(array(
+						'activity_name' => $results[1][0],
+						));
 
-		    //匯入Award
-		    $readers = $reader->getSheet(1);
-		    $results = $readers->toArray();
+			    $activities = Activity::orderby('id','desc')->first();
 
-		    $i = 1;
+			    //匯入Award
+			    $readers = $reader->getSheet(1);
+			    $results = $readers->toArray();
 
-		    while(!empty($results[$i][0]))
-		    {
-		    	Award::create(array(
-		    	'award_name' => $results[$i][0],
-		    	'activity_id' => $activities->id,
-		    	));
+			    $i = 1;
 
-		    	$i++;
-		    }
+			    while(!empty($results[$i][0]))
+			    {
+			    	Award::create(array(
+			    	'award_name' => $results[$i][0],
+			    	'activity_id' => $activities->id,
+			    	));
 
-		    $awards = Award::where('activity_id',$activities->id)->orderby('id')->get();
-		    
-		    //匯入Prize
-		    $readers = $reader->getSheet(2);
-		    $results = $readers->toArray();
+			    	$i++;
+			    }
 
-		    $i = 1;
+			    $awards = Award::where('activity_id',$activities->id)->orderby('id')->get();
+			    
+			    //匯入Prize
+			    $readers = $reader->getSheet(2);
+			    $results = $readers->toArray();
 
-		    while(!empty($results[$i][0]))
-		    {
-		    	for($j=0; $j<$awards->count(); $j++)
-		    	{
-		    		if(!strcmp($results[$i][0],$awards[$j]->award_name))
-					$award_id = $awards[$j]->id;
-		    	}
-		    	
-		    	Prize::create(array(
-					'prize_name' => $results[$i][1],
-					'award_id' => $award_id,
-					'prize_level' => $results[$i][2],
-					'prize_amount' => $results[$i][3],					
-					));
+			    $i = 1;
 
-				$i++;
-		    }
+			    while(!empty($results[$i][0]))
+			    {
+			    	for($j=0; $j<$awards->count(); $j++)
+			    	{
+			    		if(!strcmp($results[$i][0],$awards[$j]->award_name))
+						$award_id = $awards[$j]->id;
+			    	}
+			    	
+			    	Prize::create(array(
+						'prize_name' => $results[$i][1],
+						'award_id' => $award_id,
+						'prize_level' => $results[$i][2],
+						'prize_amount' => $results[$i][3],					
+						));
 
-		    //匯入Staff
-		    $readers = $reader->getSheet(3);
-		    $results = $readers->toArray();
+					$i++;
+			    }
 
-		    $i = 1;
+			    //匯入Staff
+			    $readers = $reader->getSheet(3);
+			    $results = $readers->toArray();
 
-		    while(!empty($results[$i][0]))
-		    {
-		    	if(!strcmp($results[$i][7], '男'))
-		    	$staff_gender = 1;
+			    $i = 1;
 
-		    	else
-		    	$staff_gender = 0;
+			    while(!empty($results[$i][0]))
+			    {
+			    	if(!strcmp($results[$i][7], '男'))
+			    	$staff_gender = 1;
 
-		    	Staff::create(array(
-					'activity_id' => $activities->id,
-					'staff_activity_number' => $results[$i][0],
-					'staff_number' => $results[$i][1],
-					'staff_name' => $results[$i][2],
-					'staff_cellphone' => $results[$i][3],
-					'staff_email' => $results[$i][4],
-					'staff_department' => $results[$i][5],
-					'staff_seniority' => $results[$i][6],
-      				'staff_gender' => $staff_gender,
-					'staff_level' => $results[$i][8],				
-					));
+			    	else
+			    	$staff_gender = 0;
 
-		    	$i++;
-		    }
-		});
+			    	Staff::create(array(
+						'activity_id' => $activities->id,
+						'staff_activity_number' => $results[$i][0],
+						'staff_number' => $results[$i][1],
+						'staff_name' => $results[$i][2],
+						'staff_cellphone' => $results[$i][3],
+						'staff_email' => $results[$i][4],
+						'staff_department' => $results[$i][5],
+						'staff_seniority' => $results[$i][6],
+	      				'staff_gender' => $staff_gender,
+						'staff_level' => $results[$i][8],				
+						));
+
+			    	$i++;
+			    }
+			});
+
+			Session::flash('flash_message', 'Excel匯入成功！');
+			Session::flash('flash_type', 'alert-success');
+		}
+
+		else if(Input::file('excel_filepath')!=null && (Input::file('excel_filepath')->getClientOriginalExtension() != 'xls' || Input::file('excel_filepath')->getClientOriginalExtension() != 'xlsx'))
+		{
+			Session::flash('flash_message', '檔案格式不正確');
+			Session::flash('flash_type', 'alert-danger');
+		}
+
+		else
+		{
+			Session::flash('flash_message', '未選擇檔案，請先選擇後重新嘗試');
+			Session::flash('flash_type', 'alert-danger');
+		}
 
 		return redirect('/backstage/excel');
+		
 	}
 
 	public function excel_export(Request $request)
@@ -763,21 +938,60 @@ class BackstageController extends Controller {
 		return redirect('/backstage/excel');
 	}
 
+	public function excel_download()
+	{
+		$file= public_path(). "/uploads/excel/testActivity.xlsx";
+
+    	$headers = array(
+
+          'Content-Type: application/xlsx',
+
+        );
+
+   		return Response::download($file, 'Excel範例.xlsx', $headers);
+	}
+
 	public function image_upload(Request $request)
 	{
-		$file = Input::file('image_filepath');
-		$destinationPath = 'uploads/image';
-		// If the uploads fail due to file system, you can try doing public_path().'/uploads' 
-		//$filename = $file->getClientOriginalName();
-		$extension = $file->getClientOriginalExtension();
-		$filename = str_random(12) . '.' . $extension;
+		Session::flash('flash_message', '上傳失敗，請重新嘗試');
+		Session::flash('flash_type', 'alert-danger');
 
-		if($extension == 'jpg' || $extension == 'bmp' || $extension == 'png' || $extension == 'JPG' || $extension == 'BMP' || $extension == 'PNG')
-		$upload_success = Input::file('image_filepath')->move($destinationPath, $filename, $extension);
+		if(Input::file('image_filepath') == null)
+		{
+			Session::flash('flash_message', '未選擇檔案，請先選擇後重新嘗試');
+			Session::flash('flash_type', 'alert-danger');
+		}
+
+		else if(Input::file('image_filepath')->getClientOriginalExtension() == 'jpg' || Input::file('image_filepath')->getClientOriginalExtension() == 'bmp' || Input::file('image_filepath')->getClientOriginalExtension() == 'png' || Input::file('image_filepath')->getClientOriginalExtension() == 'JPG' || Input::file('image_filepath')->getClientOriginalExtension() == 'BMP' || Input::file('image_filepath')->getClientOriginalExtension() == 'PNG')
+		{
+			$file = Input::file('image_filepath');
+			$destinationPath = 'uploads/image';
+			// If the uploads fail due to file system, you can try doing public_path().'/uploads' 
+			//$filename = $file->getClientOriginalName();
+			$extension = $file->getClientOriginalExtension();
+			$filename = str_random() . '.' . $extension;
+			$upload_success = Input::file('image_filepath')->move($destinationPath, $filename, $extension);
+
+
+			Picture::create(array(
+				'picture_name' => $filename,
+				'picture_originalname' => $file->getClientOriginalName()
+			));
+
+			$pictures = Picture::orderby('id','DESC')->first();
+
+			Session::flash('flash_message', '上傳圖片'.$pictures->picture_originalname.'成功！');
+			Session::flash('flash_type', 'alert-success');
+		}
 
 		else
-		return '僅能上傳圖檔(jpg、bmp、png)';
+		{
+			Session::flash('flash_message', '僅能上傳圖檔(jpg、bmp、png)');
+			Session::flash('flash_type', 'alert-danger');
+		}
 
-		return redirect('/backstage/image');
+		return redirect('/backstage/image');    
+
+		
 	}
 }

@@ -16,6 +16,14 @@ class UserSeeder extends Seeder {
       'password' => Hash::make('1234'),
       'password_original' => '1234'
       ]);
+
+    User::create([
+      
+      'name' => 'asiavotestafflotto',
+      'account' => 'asiavotestafflotto',
+      'password' => Hash::make('1234567890'),
+      'password_original' => '1234567890'
+      ]);
   }
 
 }

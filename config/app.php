@@ -139,6 +139,7 @@ return [
 		'Illuminate\Html\HtmlServiceProvider',
 		'Maatwebsite\Excel\ExcelServiceProvider',
 		'Intervention\Image\ImageServiceProvider',
+		'Laracasts\Flash\FlashServiceProvider',
 
 
 		/*
@@ -199,7 +200,8 @@ return [
 		'View'      => 'Illuminate\Support\Facades\View',
 		'Form'		=> 'Illuminate\Html\FormFacade',
 		'Excel'		=> 'Maatwebsite\Excel\Facades\Excel',
-		'Image'		=> 'Intervention\Image\Facades\Image'
+		'Image'		=> 'Intervention\Image\Facades\Image',
+		'Flash'		=> 'Laracasts\Flash\Flash'
 	],
 
 ];

@@ -9,7 +9,7 @@
 	<link href="{{ asset('/css/app.css') }}" rel="stylesheet">
 
 	<!-- Fonts -->
-	<link href='//fonts.googleapis.com/css?family=Roboto:400,300' rel='stylesheet' type='text/css'>
+	<link href='//fonts.googleapis.com/css?family=Roboto:400,300' rel='stylesheet' type='text/css'> 
 	<link rel="stylesheet" href="animations.css">
 
 	<!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
@@ -29,7 +29,7 @@
 					<span class="icon-bar"></span>
 					<span class="icon-bar"></span>
 				</button>
-				<a class="navbar-brand" href="{{ url('/stafflotto') }}">亞洲廣播股份有限公司</a>
+				<a class="navbar-brand" href="{{ url('/') }}">亞洲廣播股份有限公司</a>
 			</div>
 		</div>
 	</nav>

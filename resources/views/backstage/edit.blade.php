@@ -315,7 +315,7 @@
 
 		{!! Form::close() !!}
 
-		@elseif($tag == 'user')
+	@elseif($tag == 'user')
 		{!! Form::model($users,['url' => '/backstage/' . $tag . "/" . $users->id . '/update', 'method' => 'PATCH'])!!}
 
 		<table class="table table-striped">
@@ -353,6 +353,47 @@
 					<td>
 						<div class="form-group">
 							{!! Form::text('password_original',$users->password_original,['class' => 'form-control']) !!}
+							{!! Form::close() !!}
+						</div>
+					</td>
+				</tr>
+
+				@endif
+			</tbody>
+		</table>
+
+		{!! Form::submit('確認',['class'=>'btn btn-primary']) !!}
+
+		{!! Form::close() !!}
+
+	@elseif($tag == 'image')
+		{!! Form::model($pictures,['url' => '/backstage/' . $tag . "/" . $pictures->id . '/update', 'method' => 'PATCH'])!!}
+
+		<table class="table table-striped">
+			<thead>
+				<tr>
+					<th><h2>編輯</h2></th>
+					<th></th>
+				</tr>
+			</thead>
+			   		
+			<tbody>
+				@if(!empty($pictures))
+				<tr>
+					<td><h4>圖片名稱：</h4></td>
+					<td>
+						<div class="form-group">
+							{!! Form::text('picture_originalname',$pictures->picture_originalname,['class' => 'form-control']) !!}
+							{!! Form::close() !!}
+						</div>
+					</td>
+				</tr>
+
+				<tr>
+					<td><h4>使用於：</h4></td>
+					<td>
+						<div class="form-group">
+							{!! Form::select('usingfor',$activities_name,$nowactivity,array('class'=>'form-control')) !!}
 							{!! Form::close() !!}
 						</div>
 					</td>

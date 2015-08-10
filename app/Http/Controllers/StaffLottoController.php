@@ -8,6 +8,7 @@ use App\Staff;
 use App\Prize;
 use App\Activity;
 use App\Award;
+use App\Picture;
 use Illuminate\Support\Facades\Session;
 
 class StaffLottoController extends Controller {
@@ -15,14 +16,19 @@ class StaffLottoController extends Controller {
 	public function index()
 	{
 		$activities = Activity::where('activity_status',true)->first();
-		$awards = Award::where('activity_id',$activities->id)->where('award_status',true)->get();
-		$prizes = Award::join('prizes',function($join) use ($activities)
+		if(!empty($activities))
 		{
-			$join->on('awards.id','=','prizes.award_id')
-				->where('activity_id','=',$activities->id);
-		})->get();
-
-		return view('stafflotto.index',compact('tag','activities','prizes','awards'));
+			$awards = Award::where('activity_id',$activities->id)->where('award_status',true)->get();
+			
+			$prizes = Award::join('prizes',function($join) use ($activities)
+			{
+				$join->on('awards.id','=','prizes.award_id')
+					->where('activity_id','=',$activities->id);
+			})->get();
+			
+			$pictures = Picture::where('usingfor',$activities->id)->first();
+		}
+		return view('stafflotto.index',compact('tag','activities','prizes','awards','pictures'));
 	}
 
 	public function show($tag)
@@ -69,8 +75,9 @@ class StaffLottoController extends Controller {
 			$winnersnum = $winnersnum . $winners[$i]->staff_activity_number . " ";
 		}
 
-		
-		return view('stafflotto.show',compact('activities','awards','prizes','nowprize','winners','winnersnum'));
+		$pictures = Picture::where('usingfor',$activities->id)->first();
+
+		return view('stafflotto.show',compact('activities','awards','prizes','nowprize','winners','winnersnum','pictures'));
 	}
 
 	public function update($tag)

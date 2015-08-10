@@ -53,6 +53,8 @@ Route::post('backstage/excelimport', 'BackstageController@excel_import');
 
 Route::patch('backstage/excelexport', 'BackstageController@excel_export');
 
+Route::get('backstage/excel/exceldownload', 'BackstageController@excel_download');
+
 Route::post('backstage/imageupload', 'BackstageController@image_upload');
 
 Route::controllers([

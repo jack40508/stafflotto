@@ -20,6 +20,7 @@ class DatabaseSeeder extends Seeder {
 		$this->call('PrizeSeeder');
 		$this->call('ActivitySeeder');
 		$this->call('AwardSeeder');
+		$this->call('PictureSeeder');
 	}
 
 
