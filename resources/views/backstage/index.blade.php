@@ -11,7 +11,7 @@
 	
 	<div class="row">
 
-		<div class="col-md-2"> 
+		<div class="col-md-3"> 
 			<div class="sidebar-nav"> 
 			    <div class="well" style="width:200px; padding: 8px 0;"> 
 			        <ul class="nav nav-list">  
@@ -35,9 +35,6 @@
 			@yield('frag_itemlist')
 		</div>
 
-		<div class="col-md-2"> 
-			
-		</div>
 
 	</div>
 

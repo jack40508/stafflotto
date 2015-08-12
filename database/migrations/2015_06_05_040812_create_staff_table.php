@@ -28,6 +28,7 @@ class CreateStaffTable extends Migration {
 			$table->string('prize_id')->default('-1');
 			$table->boolean('staff_status')->default('1');
 			$table->string('staff_remark');
+			$table->integer('staff_round')->default('0');
 			$table->timestamps();
 		});
 	}

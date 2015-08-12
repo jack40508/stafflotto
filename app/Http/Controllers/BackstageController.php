@@ -142,7 +142,14 @@ class BackstageController extends Controller {
 			case 'staff':
 				
 				$staffs = Staff::where('id',$code)->first();
+				
 				$activities = Activity::orderby('id')->get();
+
+				$prizes = Award::join('prizes',function($join) use ($staffs)
+					{
+						$join->on('awards.id','=','prizes.award_id')
+							->where('activity_id','=',$staffs->activity_id);
+					})->orderby('prizes.id')->get();
 
 				for($i=0; $i<Activity::count(); $i++)
 				{
@@ -151,10 +158,22 @@ class BackstageController extends Controller {
 					$nowactivity = $i;
 				}
 
-				return view('backstage.edit',compact('tag','activities_name','nowactivity','staffs'));
+				$prizes_name[0] = '未獲獎';
+				$nowprize = 0;
+
+				for($i=1; $i<=$prizes->count(); $i++)
+				{
+					$prizes_name[$i] = $prizes[$i-1]->prize_name;
+					if($prizes[$i-1]->id == $staffs->prize_id)
+					{
+						$nowprize = $i;
+					}
+				}
+
+				return view('backstage.edit',compact('tag','activities_name','nowactivity','prizes_name','nowprize','staffs'));
 				break;
 
-				case 'winner':
+			case 'winner':
 				
 				$winners = Staff::where('id',$code)->first();
 
@@ -179,14 +198,14 @@ class BackstageController extends Controller {
 
 				break;
 
-				case 'user':
+			case 'user':
 
 				$users = User::orderby('id')->first();
 				return view('backstage.edit',compact('tag','users'));
 
 				break;
 
-				case 'image':
+			case 'image':
 
 				$pictures = Picture::where('pictures.id','=',$code)->first();
 
@@ -390,7 +409,26 @@ class BackstageController extends Controller {
 
 				$staffs->fill($request->input());
 				$staffs->activity_id = $activities[$request->activity_id]->id;//找到對應的Activity
-				$staffs->save();
+
+				if($request->get('prize_id') == '0')
+				{
+					$staffs->staff_status = '0';
+					$staffs->prize_id = '-1';
+					$staffs->save();
+				}
+
+				else
+				{
+					$prizes = Award::join('prizes',function($join) use ($staffs)
+					{
+						$join->on('awards.id','=','prizes.award_id')
+							->where('activity_id','=',$staffs->activity_id);
+					})->orderby('prizes.id')->get();
+
+					$staffs->prize_id = $prizes[$request->prize_id-1]->id;
+					$staffs->save();
+				}
+
 
 				Session::flash('flash_message', '更新員工－'.$staffs->staff_name.'成功！');
 				Session::flash('flash_type', 'alert-success');
@@ -526,8 +564,8 @@ class BackstageController extends Controller {
 
 		switch ($tag) {
 			case 'activity':
-				$prouser = User::where('id',2)->first();
-				if($request->prouser_password == $prouser->password_original)
+				$users = User::orderby('id')->first();
+				if($request->password == $users->password_original)
 				{
 					$activities = Activity::where('id',$code)->first();
 					Activity::where('id',$code)->delete();
@@ -925,10 +963,10 @@ class BackstageController extends Controller {
 
     		$excel->sheet('得獎人資訊', function($sheet) use ($winners) {
         		$data = [];
-    			array_push($data, ['獎項','獎品','抽獎號碼','抽獎工號','姓名','手機']);
+    			array_push($data, ['獎項','獎品','抽獎號碼','抽獎工號','姓名','手機','獲獎輪次']);
 
     			foreach ($winners as $index => $winner) {
-    				array_push($data, [$winner->award_name,$winner->prize_name,$winner->staff_activity_number,$winner->staff_number,$winner->staff_name,$winner->staff_cellphone]);
+    				array_push($data, [$winner->award_name,$winner->prize_name,$winner->staff_activity_number,$winner->staff_number,$winner->staff_name,$winner->staff_cellphone,$winner->staff_round]);
     			}
 
         		$sheet->fromArray($data,null,null,false,false);

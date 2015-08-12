@@ -99,7 +99,7 @@
 					                <div class="modal-body">
 					                    {!! Form::model($activities,['url' => '/backstage/' . $tag . "/" . $activity->id . "/delete", 'method' => 'PATCH'])!!}
 					                    <h4>此操作需要管理員權限，請輸入相關密碼：</h4>
-						                {!! Form::password('prouser_password',['class' => 'form-control']) !!}
+						                {!! Form::password('password',['class' => 'form-control']) !!}
 					                </div>
 					                <div class="modal-footer">
 					                    {!!Form::button('Close',['class'=>"btn btn-default",'data-dismiss'=>"modal"])!!}
@@ -320,6 +320,7 @@
 			        <th>活動號碼</th>
 			        <th>員工姓名</th>
 			        <th>獲得獎項</th>
+			        <th>獲獎輪次</th>
 			        <th>備註</th>
 			        <th></th>
 		      	</tr>
@@ -334,6 +335,7 @@
 							<td>{{ $winner->staff_activity_number }}</td>
 							<td>{{ $winner->staff_name }}</td>
 							<td>{{ $winner->prize_name }}</td>
+							<td>第{{ $winner->staff_round }}輪</td>
 							<td>{{ $winner->staff_remark }}</td>
 							<td><center><a href="/backstage/{{$tag}}/{{ $winner->id }}/edit" class="btn btn-primary" role="button">編輯</a><center></td>
 						</tr>
@@ -463,7 +465,7 @@
 				@if(!empty($pictures))
 					@foreach($pictures as $index => $picture)
 						<tr>
-							<td><img src="/../uploads/image/{{$picture->picture_name}}" class="img-responsive" alt="Responsive image" width="150" height="50"></td>
+							<td><img src="/../uploads/image/{{$picture->picture_name}}" class="img-responsive" alt="Responsive image" style= width:200px;height:50px></td>
 							<td>{{ $picture->picture_originalname }}</td>
 							@if($picture->usingfor == -1)
 							<td>未使用</td>

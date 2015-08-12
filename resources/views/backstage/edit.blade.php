@@ -222,6 +222,56 @@
 				</tr>
 
 				<tr>
+					<td><h4>手機號碼：</h4></td>
+					<td>
+						<div class="form-group">
+							{!! Form::text('staff_cellphone',$staffs->staff_cellphone,['class' => 'form-control']) !!}
+							{!! Form::close() !!}
+						</div>
+					</td>
+				</tr>
+
+				<tr>
+					<td><h4>EMAIL：</h4></td>
+					<td>
+						<div class="form-group">
+							{!! Form::text('staff_email',$staffs->staff_email,['class' => 'form-control']) !!}
+							{!! Form::close() !!}
+						</div>
+					</td>
+				</tr>
+
+				<tr>
+					<td><h4>所屬部門：</h4></td>
+					<td>
+						<div class="form-group">
+							{!! Form::text('staff_department',$staffs->staff_department,['class' => 'form-control']) !!}
+							{!! Form::close() !!}
+						</div>
+					</td>
+				</tr>
+
+				<tr>
+					<td><h4>年資：</h4></td>
+					<td>
+						<div class="form-group">
+							{!! Form::text('staff_seniority',$staffs->staff_seniority,['class' => 'form-control']) !!}
+							{!! Form::close() !!}
+						</div>
+					</td>
+				</tr>
+
+				<tr>
+					<td><h4>性別：</h4></td>
+					<td>
+						<div class="form-group">
+							{!! Form::select('staff_gender',array('0' => '女', '1' => '男'),$staffs->staff_gender,array('class'=>'form-control')) !!}
+							{!! Form::close() !!}
+						</div>
+					</td>
+				</tr>
+
+				<tr>
 					<td><h4>員工等級：</h4></td>
 					<td>
 						<div class="form-group">
@@ -249,6 +299,17 @@
 							{!! Form::select('staff_status',array('0' => '未參與', '1' => '參與'),$staffs->staff_status,array('class'=>'form-control')) !!}
 							{!! Form::close() !!}
 						</div>
+					</td>
+				</tr>
+
+				<tr>
+					<td><h4>獲得獎項：</h4></td>
+					<td>				
+						<div class="form-group">
+							{!! Form::select('prize_id',$prizes_name,$nowprize,array('class'=>'form-control')) !!}
+							{!! Form::close() !!}
+						</div>
+						
 					</td>
 				</tr>
 

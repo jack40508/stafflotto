@@ -27,8 +27,10 @@ class StaffLottoController extends Controller {
 			})->get();
 			
 			$pictures = Picture::where('usingfor',$activities->id)->first();
+			$background = Picture::where('usingfor','0')->first();
 		}
-		return view('stafflotto.index',compact('tag','activities','prizes','awards','pictures'));
+
+		return view('stafflotto.index',compact('tag','activities','prizes','awards','pictures','background'));
 	}
 
 	public function show($tag)
@@ -41,13 +43,24 @@ class StaffLottoController extends Controller {
 			$join->on('awards.id','=','prizes.award_id')
 				->where('activity_id','=',$activities->id);
 		})->get();
+
+		$background = Picture::where('usingfor','0')->first();
 		
 		//show所需data
 		$nowprize = Prize::where('id',$tag)->where('prize_status',true)->first();
 		$winners = Staff::where('activity_id',$activities->id)->where('prize_id',$tag)->orderby('id')->get();
 
+		if($nowprize->prize_amount - $winners->count() <= 0 && $nowprize->prize_page != 1)	//若沒有剩餘名額，直接顯示中獎人，且並不是第一次抽獎
+		{
+			$nowprize->prize_page = 3;
+			$nowprize->save();
+		}
+
 		if($nowprize->prize_page == 1)//抽獎ING
 		{
+			//僅需顯示該獎項該輪的得獎者
+			$winners = Staff::where('activity_id',$activities->id)->where('prize_id',$tag)->where('staff_round',$nowprize->prize_round)->orderby('id')->get();
+
 			$nowprize->prize_page = 2;
 			$nowprize->save();
 
@@ -63,7 +76,7 @@ class StaffLottoController extends Controller {
 			}
 		}
 
-		else if($nowprize->prize_page == 2)//抽獎完畢，檢視結果
+		else if($nowprize->prize_page == 2)//抽獎完畢，讓頁面變為檢視結果
 		{
 			$nowprize->prize_page = 3;
 			$nowprize->save();
@@ -77,7 +90,7 @@ class StaffLottoController extends Controller {
 
 		$pictures = Picture::where('usingfor',$activities->id)->first();
 
-		return view('stafflotto.show',compact('activities','awards','prizes','nowprize','winners','winnersnum','pictures'));
+		return view('stafflotto.show',compact('activities','awards','prizes','nowprize','winners','winnersnum','pictures','background'));
 	}
 
 	public function update($tag)
@@ -111,14 +124,16 @@ class StaffLottoController extends Controller {
 					$candidates[$randnum2] = $temp;
 				}
 
+				$prizes->prize_page = 1;
+				$prizes->prize_round++;
+				$prizes->save();
+
 				for($i=0; $i<$quota; $i++)
 				{				
 					$candidates[$i]->prize_id = $prizes->id;
+					$candidates[$i]->staff_round = $prizes->prize_round;
 					$candidates[$i]->save();							
 				}
-
-				$prizes->prize_page = 1;
-				$prizes->save();
 			}
 
 			else
@@ -126,6 +141,8 @@ class StaffLottoController extends Controller {
 				return '剩餘抽獎人數不足';
 			}
 		}
+
+		
 	
 		return redirect('/stafflotto/' . $tag);			
 	}

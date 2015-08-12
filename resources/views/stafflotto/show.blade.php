@@ -91,7 +91,7 @@
 		var ss_elemshow1,ss_elemshow2;
 		var maxNum = 9;  
 		var minNum = 0;
-		var result1="",result2="";
+		var result1=" ",result2=" ";
 
 		var winnersnum_cut = ["*","*","*","*","*","*"];
 		var winnersnum_cut_integrated = [""];
@@ -191,12 +191,12 @@
 <div class="container">
 
 	@if(!empty($nowprize))
-		<div class="col-md-6">
+		<div class="col-md-8">
 			<table class="table table-striped">
 			    <caption>
 				    <div class="row">
 					    <div class="col-md-4">
-							<h2>{!!$nowprize->prize_name!!}</h2>
+							<center><h2>{!!$nowprize->prize_name!!}</h2></center>
 						</div>
 						
 						<div class="col-md-4">
@@ -210,55 +210,55 @@
 					</div>
 
 					@if(!empty($winners))
-					
-						<div class="col-md-2">
-							<h1><span id="slideshow1"></span></h1>
+					<div class="row">
+						<div class="col-md-2" style="background: url(/uploads/image/lottoball.png); height: 80px; width: 80px; margin-left: 24px;">
+							<center><h1><span id="slideshow1"></span></h1></center>
 							<script>
 								ss_elem1 = document.getElementById("slideshow1");
 								//ssSlide();
 							</script>
 						</div>
 						
-						<div class="col-md-2">
-							<h1><span id="slideshow2"></span></h1>
+						<div class="col-md-2" style="background: url(/uploads/image/lottoball.png); height: 80px; width: 80px; margin-left: 24px;">
+							<center><h1><span id="slideshow2"></span></h1></center>
 							<script>
 								ss_elem2 = document.getElementById("slideshow2");
 								//ssSlide();
 							</script>
 						</div>
 
-						<div class="col-md-2">
-							<h1><span id="slideshow3"></span></h1>
+						<div class="col-md-2" style="background: url(/uploads/image/lottoball.png); height: 80px; width: 80px; margin-left: 24px;">
+							<center><h1><span id="slideshow3"></span></h1></center>
 							<script>
 								ss_elem3 = document.getElementById("slideshow3");
 								//ssSlide();
 							</script>
 						</div>
 						
-						<div class="col-md-2">
-							<h1><span id="slideshow4"></span></h1>
+						<div class="col-md-2" style="background: url(/uploads/image/lottoball.png); height: 80px; width: 80px; margin-left: 24px;">
+							<center><h1><span id="slideshow4"></span></h1></center>
 							<script>
 								ss_elem4 = document.getElementById("slideshow4");
 								//ssSlide();
 							</script>
 						</div>
 
-						<div class="col-md-2">
-							<h1><span id="slideshow5"></span></h1>
+						<div class="col-md-2" style="background: url(/uploads/image/lottoball.png); height: 80px; width: 80px; margin-left: 24px;">
+							<center><h1><span id="slideshow5"></span></h1></center>
 							<script>
 								ss_elem5 = document.getElementById("slideshow5");
 								//ssSlide();
 							</script>
 						</div>
 						
-						<div class="col-md-2">
-							<h1><span id="slideshow6"></span></h1>
+						<div class="col-md-2" style="background: url(/uploads/image/lottoball.png); height: 80px; width: 80px; margin-left: 24px;">
+							<center><h1><span id="slideshow6"></span></h1></center>
 							<script>
 								ss_elem6 = document.getElementById("slideshow6");
 								//ssSlide();
 							</script>
 						</div>
-					
+					</div>
 					@endif
 
 				</caption>
@@ -285,6 +285,8 @@
 				
 				@elseif($nowprize->prize_page == 2)
 					<tbody>
+						<tr>
+						</tr>
 						<tr>
 							<td>
 							<center><h2><span id="showstaff1"></span></h2></center>

@@ -21,6 +21,7 @@ class CreatePrizesTable extends Migration {
 			$table->integer('prize_amount');
 			$table->boolean('prize_status')->default('0');
 			$table->integer('prize_page')->default('0');
+			$table->integer('prize_round')->default('0');
 			$table->timestamps();
 		});
 	}

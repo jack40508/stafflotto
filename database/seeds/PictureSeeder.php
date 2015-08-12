@@ -11,9 +11,16 @@ class PictureSeeder extends Seeder {
 
     Picture::create([
       
-      'picture_name' => 'CGAssoq8NuGx.jpg',
-      'picture_originalname' => '第一次抽獎抽獎測試用圖.jpg',
+      'picture_name' => 'CGAssoq8NuGx.png',
+      'picture_originalname' => '第一次抽獎抽獎測試圖.png',
       'usingfor' => '1'
+      ]);
+
+    Picture::create([
+      
+      'picture_name' => 'sIhfDvrsc8wRjS0J.png',
+      'picture_originalname' => '背景測試用圖.png',
+      'usingfor' => '0'
       ]);
   }
 
