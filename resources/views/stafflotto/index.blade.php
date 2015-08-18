@@ -7,7 +7,7 @@
 <head>
 	<meta charset="UTF-8">
 	<title>Stafflotto_index</title>
-	<link href='http://fonts.googleapis.com/css?family=Indie+Flower' rel='stylesheet' type='text/css'>
+	<!--<link href='http://fonts.googleapis.com/css?family=Indie+Flower' rel='stylesheet' type='text/css'>-->
 </head>
 <!--<body style="background: url(http://subtlepatterns.com/patterns/stardust.png);">-->
 @if(empty($tag) && !empty($background))
@@ -26,7 +26,7 @@
 			@elseif(!empty($tag) && !empty($pictures))
 			<img src="/../uploads/image/{{ $pictures->picture_name }}" class="img-responsive" alt="Responsive image">
 			@else
-			<div class="col-md-8"style="font-family: 'Indie Flower', cursive;"><h1>{{ $activities->activity_name }}</h1>
+			<div class="col-md-8"><h1>{{ $activities->activity_name }}</h1>
 			@endif
 		</div>	
 	

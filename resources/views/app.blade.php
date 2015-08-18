@@ -4,7 +4,7 @@
 	<meta charset="utf-8">
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
-	<title>StaffLotto</title>
+	<title>亞洲廣播股份有限公司</title>
 
 	<link href="{{ asset('/css/app.css') }}" rel="stylesheet">
 
@@ -20,6 +20,7 @@
 	<![endif]-->
 </head>
 <body>
+	<div style="font-family:Microsoft JhengHei;">
 	<nav class="navbar navbar-default">
 		<div class="container-fluid">
 			<div class="navbar-header">
@@ -40,6 +41,6 @@
 	<!-- Scripts -->
 	<script src="//cdnjs.cloudflare.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
 	<script src="//cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.1/js/bootstrap.min.js"></script>
-
+	</div>
 </body>
 </html>

@@ -21,7 +21,6 @@
 			          <li><a href="/backstage/award">獎項及獎品管理</a></li> 
 			          <li><a href="/backstage/staff">抽獎號碼管理</a></li> 
 			          <li><a href="/backstage/winner">中獎名單一覽表</a></li> 
-			          <li><a href="#">網站管理</a></li> 
 			          <li><a href="/backstage/image">圖檔管理</a></li> 
 			          <li><a href="/backstage/excel">Excel管理</a></li> 
 			          <li><a href="/backstage/user">使用者管理</a></li> 
