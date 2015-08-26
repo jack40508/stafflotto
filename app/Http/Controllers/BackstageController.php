@@ -15,6 +15,7 @@ use Maatwebsite\Excel\Facades\Excel;
 use Hash;
 use Response;
 use Session;
+use Auth;
 
 class BackstageController extends Controller {
 
@@ -38,17 +39,23 @@ class BackstageController extends Controller {
 
 			case 'award':
 				//$awards = Award::join('activities','awards.activity_id','=','activities.id')->get();
+				$activities = Activity::orderby('id')->get();
+
 				$awards = Activity::join('awards','activities.id','=','awards.activity_id')->get();
-				return view('backstage.show',compact('tag','awards'));
+				return view('backstage.show',compact('tag','awards','activities'));
 				break;
 
 			case 'staff':
 				//$staffs = Staff::join('activities','staff.activity_id','=','activities.activity_id')->get();
+				$activities = Activity::orderby('id')->get();
+
 				$staffs = Activity::join('staff','activities.id','=','staff.activity_id')->get();
-				return view('backstage.show',compact('tag','staffs'));
+				return view('backstage.show',compact('tag','staffs','activities'));
 				break;
 
 			case 'winner':
+
+				$activities = Activity::orderby('id')->get();
 
 				$winners = Activity::join('awards','activities.id','=','awards.activity_id')
 									->join('prizes','awards.id','=','prizes.award_id')
@@ -58,12 +65,12 @@ class BackstageController extends Controller {
 											->where('staff.prize_id','!=','-1');
 									})->orderby('prize_id')->get();
 
-				return view('backstage.show',compact('tag','winners'));
+				return view('backstage.show',compact('tag','winners','activities'));
 				break;
 
 			case 'user':
 
-				$users = User::orderby('id')->first();
+				$users = User::orderby('id')->get();
 
 				return view('backstage.show',compact('tag','users'));
 				break;
@@ -80,7 +87,7 @@ class BackstageController extends Controller {
 
 			case 'image':		
 				
-				$pictures = Activity::rightjoin('pictures','activities.id','=','pictures.usingfor')->orderby('pictures.id')->get();
+				$pictures = Activity::rightjoin('pictures','activities.id','=','pictures.usingfor')->orderby('pictures.id','DESC')->get();
 
 				return view('backstage.show',compact('tag','pictures'));
 				break;
@@ -94,6 +101,48 @@ class BackstageController extends Controller {
 	public function showdeep($pretag,$precode,$tag)
 	{
 		switch ($tag) {
+			case 'award':
+
+				$activities = Activity::orderby('id')->get();
+
+				$awards = Activity::join('awards',function($join) use ($precode)
+					{
+						$join->on('activities.id','=','awards.activity_id')
+							->where('activities.id','=',$precode);
+					})->get();
+				return view('backstage.show',compact('pretag','tag','precode','awards','activities'));
+
+				break;
+
+			case 'staff':
+				
+				$activities = Activity::orderby('id')->get();
+
+				$staffs = Activity::join('staff',function($join) use ($precode)
+					{
+						$join->on('activities.id','=','staff.activity_id')
+							->where('activities.id','=',$precode);
+					})->get();
+				
+				return view('backstage.show',compact('pretag','tag','precode','staffs','activities'));
+				break;
+
+			case 'winner':
+
+				$activities = Activity::orderby('id')->get();
+
+				$winners = Activity::join('awards','activities.id','=','awards.activity_id')
+									->join('prizes','awards.id','=','prizes.award_id')
+									->join('staff', function($join) use ($precode)
+									{
+										$join->on('prizes.id','=','staff.prize_id')
+											->where('staff.prize_id','!=','-1')
+											->where('activities.id','=',$precode);
+									})->orderby('prize_id')->get();
+
+				return view('backstage.show',compact('pretag','tag','precode','winners','activities'));
+				break;
+
 			case 'prize':
 
 				/*$prizes = Prize::join('awards',function($join) use ($code)
@@ -200,7 +249,7 @@ class BackstageController extends Controller {
 
 			case 'user':
 
-				$users = User::orderby('id')->first();
+				$users = User::where('id',$code)->first();
 				return view('backstage.edit',compact('tag','users'));
 
 				break;
@@ -564,8 +613,8 @@ class BackstageController extends Controller {
 
 		switch ($tag) {
 			case 'activity':
-				$users = User::orderby('id')->first();
-				if($request->password == $users->password_original)
+				
+				if($request->password == Auth::user()->password_original)
 				{
 					$activities = Activity::where('id',$code)->first();
 					Activity::where('id',$code)->delete();
@@ -606,6 +655,15 @@ class BackstageController extends Controller {
 				Staff::where('id',$code)->delete();
 
 				Session::flash('flash_message', '刪除員工－'.$staffs->staff_name.'成功！');
+				Session::flash('flash_type', 'alert-success');
+
+				break;
+
+			case 'user':
+				$users = User::where('id',$code)->first();
+				User::where('id',$code)->delete();
+
+				Session::flash('flash_message', '刪除使用者－'.$users->name.'成功！');
 				Session::flash('flash_type', 'alert-success');
 
 				break;
@@ -667,6 +725,11 @@ class BackstageController extends Controller {
 
 				return view('backstage.insert',compact('tag','activities_name'));
 				
+				break;
+
+			case 'user':
+				return view('backstage.insert',compact('tag'));
+
 				break;
 			
 			default:
@@ -765,6 +828,21 @@ class BackstageController extends Controller {
 				$staffs = Staff::orderby('id','DESC')->first();
 
 				Session::flash('flash_message', '新建員工－'.$staffs->staff_name.'成功！');
+				Session::flash('flash_type', 'alert-success');
+
+				break;
+
+			case 'user':
+				User::create(array(
+					'name' => $request->get('name'),
+					'account' => $request->get('account'),
+					'password' => Hash::make($request->get('password')),
+					'password_original' => $request->get('password')
+					));
+
+				$users = User::orderby('id','DESC')->first();
+
+				Session::flash('flash_message', '新建使用者'.$users->name.'成功！');
 				Session::flash('flash_type', 'alert-success');
 
 				break;
@@ -936,10 +1014,11 @@ class BackstageController extends Controller {
 
 		$winners = Activity::join('awards','activities.id','=','awards.activity_id')
 							->join('prizes','awards.id','=','prizes.award_id')
-							->join('staff',function($join)
+							->join('staff',function($join) use ($nowactivity)
 							{
 								$join->on('prizes.id','=','staff.prize_id')
-									->where('staff.prize_id','!=','-1');
+									->where('staff.prize_id','!=','-1')
+									->where('activities.id','=',$nowactivity->id);
 							})->orderby('prize_id')->get();
 
 		Excel::create($nowactivity->activity_name, function($excel) use ($staffs,$winners) {

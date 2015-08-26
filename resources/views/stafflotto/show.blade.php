@@ -186,32 +186,24 @@
 		}
 	</script>
 
+	<script type="text/javascript">
+
+	onkeyup = function () {
+	alert('Lee');
+	};
+</script>
+
 </head>
 <body>
 <div class="container">
 
 	@if(!empty($nowprize))
 		<div class="col-md-8">
-			<table class="table table-striped">
-			    <caption>
-				    <div class="row">
-					    <div class="col-md-4">
-							<center><h2>{!!$nowprize->prize_name!!}</h2></center>
-						</div>
-						
-						<div class="col-md-4">
-						</div>
-						
-						<div class="col-md-4">
-							{!! Form::model($nowprize,['url' => '/stafflotto/' . $nowprize->id , 'method' => 'PATCH'])!!}
-							{!! Form::submit('開始抽獎',['class'=>'btn btn-primary']) !!}
-							{!! Form::close() !!}
-						</div>
-					</div>
-
-					@if(!empty($winners))
+			<h2>{!!$nowprize->prize_name!!}</h2>
+			
+			@if(!empty($winners))
 					<div class="row">
-						<div class="col-md-2" style="background: url(/uploads/image/lottoball.png); height: 80px; width: 80px; margin-left: 24px;">
+						<div class="col-md-2" style="background: url(/uploads/image/lottoball.png); height: 80px; width: 80px;">
 							<center><h1><span id="slideshow1"></span></h1></center>
 							<script>
 								ss_elem1 = document.getElementById("slideshow1");
@@ -258,8 +250,21 @@
 								//ssSlide();
 							</script>
 						</div>
+
+						
+						@if($nowprize->prize_page==0)
+							<div class="col-md-2" style ="position:absolute; top:50%; left :80%;">
+								{!! Form::model($nowprize,['url' => '/stafflotto/' . $nowprize->id , 'method' => 'PATCH'])!!}
+								<center>{!! Form::submit('開始抽獎',['class'=>'btn btn-primary']) !!}</center>
+								{!! Form::close() !!}
+							</div>
+						@endif
 					</div>
 					@endif
+
+			<table class="table table-striped">
+			    <caption>
+					
 
 				</caption>
 		   		@if($nowprize->prize_page == 3)

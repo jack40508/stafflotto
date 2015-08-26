@@ -20,7 +20,7 @@
 	<![endif]-->
 </head>
 <body>
-	<div style="font-family:Microsoft JhengHei;">
+<!--	<div style="font-family:Microsoft JhengHei;">
 	<nav class="navbar navbar-default">
 		<div class="container-fluid">
 			<div class="navbar-header">
@@ -34,7 +34,7 @@
 			</div>
 		</div>
 	</nav>
-
+-->
 	@yield('content')
 	
 

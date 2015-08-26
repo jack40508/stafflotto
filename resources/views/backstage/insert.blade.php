@@ -240,6 +240,55 @@
 			{!! Form::submit('確認',['class'=>'btn btn-primary']) !!}
 
 			{!! Form::close() !!}
+		@elseif($tag == 'user')
+		
+		{!! Form::model($tag,['url' => '/backstage/' . $tag . '/create', 'method' => 'PATCH'])!!}
+
+			<table class="table table-striped">
+				<thead>
+					<tr>
+						<th><h2>新建使用者</h2></th>
+						<th></th>
+					</tr>
+				</thead>
+				   		
+				<tbody>
+					<tr>
+						<td><h4>名稱：</h4></td>
+						<td>
+							<div class="form-group">
+								{!! Form::text('name',"",['class' => 'form-control']) !!}
+								{!! Form::close() !!}
+							</div>
+						</td>
+					</tr>
+
+					<tr>
+						<td><h4>帳號：</h4></td>
+						<td>
+							<div class="form-group">
+								{!! Form::text('account',"",['class' => 'form-control']) !!}
+								{!! Form::close() !!}
+							</div>
+						</td>
+					</tr>
+
+					<tr>
+						<td><h4>密碼：</h4></td>
+						<td>
+							<div class="form-group">
+								{!! Form::text('password',"",['class' => 'form-control']) !!}
+								{!! Form::close() !!}
+							</div>
+						</td>
+					</tr>
+				</tbody>
+			</table>
+
+			
+			{!! Form::submit('確認',['class'=>'btn btn-primary']) !!}
+
+			{!! Form::close() !!}
 
 		@endif
 

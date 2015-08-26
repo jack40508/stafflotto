@@ -17,17 +17,16 @@
 
 	@if($tag  == 'activity')
 
+		@if ( Session::has('flash_message') )
+			<div class="alert {{ Session::get('flash_type') }}">
+				{{ Session::get('flash_message') }}
+			</div>
+		@endif
+
 		<div class="row">
 			<div class="col-md-2">
 				<a href="/backstage/{{$tag}}/insert" class="btn btn-success" role="button">新增</a>
-			</div>
-			<div class="col-md-8">
-				@if ( Session::has('flash_message') )
-					<div class="alert {{ Session::get('flash_type') }}">
-					    {{ Session::get('flash_message') }}
-					</div>
-				@endif
-			</div>
+			</div>			
 		</div>
 
 <!--	//Button to trigger modal
@@ -116,16 +115,41 @@
 
 	@elseif($tag  == 'award')
 
+		@if ( Session::has('flash_message') )
+			<div class="alert {{ Session::get('flash_type') }}">
+				{{ Session::get('flash_message') }}
+			</div>
+		@endif
+
 		<div class="row">
 			<div class="col-md-2">
 				<a href="/backstage/{{$tag}}/insert" class="btn btn-success" role="button">新增</a>
 			</div>
-			<div class="col-md-8">
-				@if ( Session::has('flash_message') )
-					<div class="alert {{ Session::get('flash_type') }}">
-					    {{ Session::get('flash_message') }}
-					</div>
-				@endif
+
+			<div class="col-md-2">
+				<center><h4>活動選擇：</h4></center>
+			</div>
+
+			<div class="col-md-4">
+				<select class="selectpicker form-control" data-live-search="true" onchange="location = this.options[this.selectedIndex].value;">
+				    @if(empty($pretag))
+					    <option value="/backstage/award" selected>全部活動</option>
+					    @foreach($activities as $index => $activity)
+					    	<option value="/backstage/activity/{{$activity->id}}/award">{{ $activity->activity_name }}</option>
+					    @endforeach
+
+					@else
+						<option value="/backstage/award">全部活動</option>
+					    @foreach($activities as $index => $activity)
+					    	@if($activity->id == $precode)
+					    		<option value="/backstage/activity/{{$activity->id}}/award" selected>{{ $activity->activity_name }}</option>
+					    	@else
+					    		<option value="/backstage/activity/{{$activity->id}}/award">{{ $activity->activity_name }}</option>
+					    	@endif
+					    @endforeach
+
+				    @endif
+			  	</select>
 			</div>
 		</div>
 
@@ -233,16 +257,41 @@
 
 	@elseif($tag  == 'staff')
 		
+		@if ( Session::has('flash_message') )
+			<div class="alert {{ Session::get('flash_type') }}">
+				{{ Session::get('flash_message') }}
+			</div>
+		@endif
+
 		<div class="row">
 			<div class="col-md-2">
 				<a href="/backstage/{{$tag}}/insert" class="btn btn-success" role="button">新增</a>
 			</div>
-			<div class="col-md-8">
-				@if ( Session::has('flash_message') )
-					<div class="alert {{ Session::get('flash_type') }}">
-					    {{ Session::get('flash_message') }}
-					</div>
-				@endif
+
+			<div class="col-md-2">
+				<center><h4>活動選擇：</h4></center>
+			</div>
+			
+			<div class="col-md-4">
+				<select class="selectpicker form-control" data-live-search="true" onchange="location = this.options[this.selectedIndex].value;">
+				    @if(empty($pretag))
+					    <option value="/backstage/staff" selected>全部活動</option>
+					    @foreach($activities as $index => $activity)
+					    	<option value="/backstage/activity/{{$activity->id}}/staff">{{ $activity->activity_name }}</option>
+					    @endforeach
+
+					@else
+						<option value="/backstage/staff">全部活動</option>
+					    @foreach($activities as $index => $activity)
+					    	@if($activity->id == $precode)
+					    		<option value="/backstage/activity/{{$activity->id}}/staff" selected>{{ $activity->activity_name }}</option>
+					    	@else
+					    		<option value="/backstage/activity/{{$activity->id}}/staff">{{ $activity->activity_name }}</option>
+					    	@endif
+					    @endforeach
+
+				    @endif
+			  	</select>
 			</div>
 		</div>
 
@@ -300,15 +349,39 @@
 		</table>
 
 	@elseif($tag  == 'winner')
+		@if ( Session::has('flash_message') )
+			<div class="alert {{ Session::get('flash_type') }}">
+			    {{ Session::get('flash_message') }}
+			</div>
+		@endif
+
 		<div class="row">
 			<div class="col-md-2">
 			</div>
-			<div class="col-md-8">
-				@if ( Session::has('flash_message') )
-					<div class="alert {{ Session::get('flash_type') }}">
-					    {{ Session::get('flash_message') }}
-					</div>
-				@endif
+			<div class="col-md-2">
+				<center><h4>活動選擇：</h4></center>
+			</div>
+			
+			<div class="col-md-4">
+				<select class="selectpicker form-control" data-live-search="true" onchange="location = this.options[this.selectedIndex].value;">
+				    @if(empty($pretag))
+					    <option value="/backstage/winner" selected>全部活動</option>
+					    @foreach($activities as $index => $activity)
+					    	<option value="/backstage/activity/{{$activity->id}}/winner">{{ $activity->activity_name }}</option>
+					    @endforeach
+
+					@else
+						<option value="/backstage/winner">全部活動</option>
+					    @foreach($activities as $index => $activity)
+					    	@if($activity->id == $precode)
+					    		<option value="/backstage/activity/{{$activity->id}}/winner" selected>{{ $activity->activity_name }}</option>
+					    	@else
+					    		<option value="/backstage/activity/{{$activity->id}}/winner">{{ $activity->activity_name }}</option>
+					    	@endif
+					    @endforeach
+
+				    @endif
+			  	</select>
 			</div>
 		</div>
 
@@ -346,17 +419,15 @@
 
 	@elseif($tag  == 'user')
 		
-		<div class="row">
-			<div class="col-md-2">				
+		@if ( Session::has('flash_message') )
+			<div class="alert {{ Session::get('flash_type') }}">
+				{{ Session::get('flash_message') }}
 			</div>
-			<div class="col-md-8">
-				@if ( Session::has('flash_message') )
-					<div class="alert {{ Session::get('flash_type') }}">
-					    {{ Session::get('flash_message') }}
-					</div>
-				@endif
+		@endif
+
+		<div class="col-md-2">
+				<a href="/backstage/{{$tag}}/insert" class="btn btn-success" role="button">新增</a>
 			</div>
-		</div>
 
 		<table class="table table-striped">
 			<thead>
@@ -370,15 +441,23 @@
 	   		
 	   		<tbody>
 			    @if(!empty($users))
-					<tr>
-						<td>{{ $users->name }}</td>
-						<td>{{ $users->account }}</td>
-						<td>{{ $users->password_original }}</td>
-						<td>
-						<center><a href="/backstage/{{$tag}}/{{ $users->id }}/edit" class="btn btn-primary" role="button">編輯</a></center>
-						</td>
-					</tr>
-					@endif
+					@foreach($users as $index => $user)
+						<tr>
+							<td>{{ $user->name }}</td>
+							<td>{{ $user->account }}</td>
+							<td>{{ $user->password_original }}</td>
+							<td>
+							
+							{!! Form::model($users,['url' => '/backstage/' . $tag . "/" . $user->id . "/delete", 'method' => 'PATCH'])!!}
+							<center>
+							<a href="/backstage/{{$tag}}/{{ $user->id }}/edit" class="btn btn-primary" role="button">編輯</a>
+							{!! Form::submit('刪除',['class'=>'btn btn-danger']) !!}
+							</center>
+							{!! Form::close() !!}
+							</td>
+						</tr>
+					@endforeach
+				@endif
 			</tbody>
 		</table>
 
@@ -416,7 +495,11 @@
 
 		<div class="row">
 			<div class="col-md-5">
-				{!! Form::select('activity_id',$activities_name,0,array('class'=>'form-control')) !!}
+				@if(!empty($activities_name))
+					{!! Form::select('activity_id',$activities_name,0,array('class'=>'form-control')) !!}
+				@else
+					<h3>查無活動</h3>
+				@endif
 			</div>
 			<div class="col-md-2">
 				{!! Form::submit('匯出Excel',['class'=>'btn btn-primary']) !!}
