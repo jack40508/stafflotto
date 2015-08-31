@@ -184,14 +184,20 @@
 				}
 			}
 		}
+
+
 	</script>
 
 	<script type="text/javascript">
 
-	onkeyup = function () {
-	alert('Lee');
-	};
-</script>
+		onkeyup = function() {
+			if((event.keyCode==80 || event.keyCode==32) && {{$nowprize->prize_page}} == 0)
+			{
+				window.location.assign("/stafflotto/{{$nowprize->id}}/update");
+			}
+			//alert(event.keyCode);
+		};
+	</script>
 
 </head>
 <body>
@@ -203,7 +209,7 @@
 			
 			@if(!empty($winners))
 					<div class="row">
-						<div class="col-md-2" style="background: url(/uploads/image/lottoball.png); height: 80px; width: 80px;">
+						<div class="col-md-2" style="background: url(/uploads/image/lottoball.png); height: 80px; width: 80px; margin-left: 24px;">
 							<center><h1><span id="slideshow1"></span></h1></center>
 							<script>
 								ss_elem1 = document.getElementById("slideshow1");
@@ -253,9 +259,9 @@
 
 						
 						@if($nowprize->prize_page==0)
-							<div class="col-md-2" style ="position:absolute; top:50%; left :80%;">
+							<div class="col-md-2" style ="position:absolute; left :85%;">
 								{!! Form::model($nowprize,['url' => '/stafflotto/' . $nowprize->id , 'method' => 'PATCH'])!!}
-								<center>{!! Form::submit('開始抽獎',['class'=>'btn btn-primary']) !!}</center>
+								<center>{!! Form::submit('',['class'=>'form-control','style'=>'background : url(/uploads/image/btn_start.png); height: 80px; width: 80px;  background-repeat:no-repeat; border-width:0;']) !!}</center>
 								{!! Form::close() !!}
 							</div>
 						@endif
@@ -310,6 +316,7 @@
 	@endif
 	
 	<script>ssSlide();</script>
+
 
 </div>
 </body>

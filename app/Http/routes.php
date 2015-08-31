@@ -22,6 +22,8 @@ Route::get('stafflotto/{index}', 'StaffLottoController@show');
 
 Route::patch('stafflotto/{index}', 'StaffLottoController@update');
 
+Route::get('stafflotto/{index}/update', 'StaffLottoController@update');  //鍵盤事件專用路徑
+
 
 Route::get('backstage', 'BackstageController@index');
 
